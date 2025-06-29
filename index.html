@@ -1026,12 +1026,6 @@ Where:
                     console.warn(`Error fetching overall player stats for target share: ${playerStatsOverallError.message}. Defaulting Target Share to 0.`);
                     document.getElementById('targetShare').value = 0; // Default if overall not found
                 } else if (playerStatsOverallData && playerStatsOverallData.tprr_player !== null) {
-                    // Target Share is not directly TPRR_Overall. Assuming Target Share = TPRR_Overall * Participation (0.85)
-                    // The formula states: Est_Base_TPRR = Target_Share × 0.85 (assuming 85% route participation)
-                    // So, if we use TPRR_Overall as Est_Base_TPRR, then Target_Share = TPRR_Overall / 0.85
-                    // However, the formula's usage of Target_Share (Volume_Factor = (Target_Share × Routes_Per_Game) / 100)
-                    // implies Target_Share is a direct percentage.
-                    // Let's assume TPRR_Overall from database is the Target Share as a percentage.
                     document.getElementById('targetShare').value = (playerStatsOverallData.tprr_player * 100).toFixed(1);
                 } else {
                     document.getElementById('targetShare').value = 0;
