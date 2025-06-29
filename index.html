@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NFL WR Reception Betting Model</title>
     <style>
-        /* ... (Your CSS styles - unchanged) ... */
-
+        /* Your CSS styles - unchanged */
         * {
             margin: 0;
             padding: 0;
@@ -63,7 +62,6 @@
             z-index: -1;
         }
         
-        /* Password Screen Styles */
         .password-overlay {
             position: fixed;
             top: 0;
@@ -735,8 +733,7 @@
             <div class="password-input-group">
                 <input type="password" class="password-input" id="passwordInput" placeholder="Enter Password" autocomplete="off">
             </div>
-            <button class="password-submit" onclick="checkPassword()">UNLOCK</button>
-            <div class="password-error" id="passwordError">Incorrect password. Please try again.</div>
+            <button class="password-submit" id="passwordSubmit">UNLOCK</button> <div class="password-error" id="passwordError">Incorrect password. Please try again.</div>
         </div>
     </div>
 
@@ -787,8 +784,7 @@ Where:
                         <label for="seasonInput">Season (Year)</label>
                         <input type="number" id="seasonInput" value="2024" min="2000" max="2030">
                     </div>
-                    <button class="load-data-btn" onclick="loadPlayerAndMatchupData()">Load Player & Matchup Data</button>
-                    <div id="loadingStatus" style="color: #facc15; font-size: 14px; text-align: center; margin-top: 10px; display: none;">Loading...</div>
+                    <button class="load-data-btn">Load Player & Matchup Data</button> <div id="loadingStatus" style="color: #facc15; font-size: 14px; text-align: center; margin-top: 10px; display: none;">Loading...</div>
                     <div id="errorStatus" style="color: #ef4444; font-size: 14px; text-align: center; margin-top: 10px; display: none;"></div>
                 </div>
 
@@ -858,9 +854,7 @@ Where:
                 </div>
             </div>
             
-            <button class="calculate-btn" onclick="calculateScore()" ontouchstart="">Calculate Reception Score</button>
-            
-            <div class="results" id="results" style="display: none; margin-top: 30px;">
+            <button class="calculate-btn">Calculate Reception Score</button> <div class="results" id="results" style="display: none; margin-top: 30px;">
                 <h3 style="color: #3b82f6; margin-bottom: 20px;">Analysis Results</h3>
                 
                 <div class="component-chart">
@@ -906,54 +900,72 @@ Where:
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@latest"></script> <script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@latest"></script> 
+
+    <script>
         // Supabase Client Initialization (replace with your actual URL and Key)
         // IMPORTANT: Use your SUPABASE_URL and SUPABASE_KEY here (the public/anon key)
-        const SUPABASE_URL = 'https://pyjtwdgapmbdgtpflzan.supabase.co'; // <--- Replace this with your URL
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5anR3ZGdhcG1iZGd0cGZsemFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExNTEzNTgsImV4cCI6MjA2NjcyNzM1OH0._Bt_XomEPAYRqC6zNgkNDwq66XFlpMoPbNMB6Eb4USo'; // <--- Replace this with your public API Key
+        const SUPABASE_URL = 'https://pyjtwdgapmbdgtpflzan.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5anR3ZGdhcG1iZGd0cGZsemFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExNTEzNTgsImV4cCI6MjA2NjcyNzM1OH0._Bt_XomEPAYRqC6zNgkNDwq66XFlpMoPbNMB6Eb4USo';
 
-        let supabase; // Declare with let, initialize inside DOMContentLoaded
+        // Declare supabase client variable globally or with 'let' so it can be assigned later
+        let supabaseClientInstance; 
 
-        // --- NEW: Wrap entire main script logic in DOMContentLoaded ---
+        // Wrap ALL main script logic in DOMContentLoaded to ensure elements and CDN are loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Supabase client ONLY AFTER DOM is fully loaded and CDN script should have run
-            supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            // --- DEBUG LOGS FOR SUPABASE INIT ---
+            console.log("DEBUG (DOMContentLoaded): Script block starting.");
+            console.log("DEBUG (DOMContentLoaded): Type of Supabase:", typeof Supabase);
+            if (typeof Supabase !== 'undefined') {
+                console.log("DEBUG (DOMContentLoaded): Supabase object:", Supabase);
+                // Initialize Supabase client ONLY AFTER DOM is fully loaded and Supabase global is available
+                supabaseClientInstance = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log("DEBUG (DOMContentLoaded): Supabase client created:", supabaseClientInstance);
+            } else {
+                console.error("DEBUG (DOMContentLoaded ERROR): Supabase is NOT defined. Cannot initialize client.");
+                document.getElementById('errorStatus').textContent = "ERROR: Supabase library failed to load. Try disabling browser extensions or use Incognito mode.";
+                document.getElementById('errorStatus').style.display = 'block';
+                return; // Stop execution if Supabase isn't defined
+            }
+            // --- END DEBUG LOGS ---
 
-            // Password check function
+            // --- Password check function ---
+            const passwordOverlay = document.getElementById('passwordOverlay');
+            const mainContent = document.getElementById('mainContent');
+            const passwordInput = document.getElementById('passwordInput');
+            const passwordSubmitBtn = document.getElementById('passwordSubmit'); // Get button by ID
+            const passwordError = document.getElementById('passwordError');
+
             function checkPassword() {
-                const passwordInput = document.getElementById('passwordInput');
-                const password = passwordInput.value;
                 const correctPassword = 'BALLSTICK'; 
-
-                if (password === correctPassword) {
-                    document.getElementById('passwordOverlay').style.display = 'none';
-                    document.getElementById('mainContent').style.display = 'block';
+                if (passwordInput.value === correctPassword) {
+                    passwordOverlay.style.display = 'none';
+                    mainContent.style.display = 'block';
                 } else {
-                    document.getElementById('passwordError').style.display = 'block';
+                    passwordError.style.display = 'block';
                     passwordInput.value = '';
                     passwordInput.focus();
                     setTimeout(() => {
-                        document.getElementById('passwordError').style.display = 'none';
+                        passwordError.style.display = 'none';
                     }, 3000);
                 }
             }
 
-            // Allow Enter key to submit password
-            document.getElementById('passwordInput').addEventListener('keypress', function(event) {
+            // Event Listeners for Password
+            passwordSubmitBtn.addEventListener('click', checkPassword); // Added event listener
+            passwordInput.addEventListener('keypress', function(event) {
                 if (event.key === 'Enter') {
                     checkPassword();
                 }
             });
-            
-            // Focus on password input when page loads (only if password overlay is visible)
-            // This is now handled within checkPassword success or directly if no password needed
-            if (document.getElementById('passwordOverlay').style.display !== 'none') {
-                 document.getElementById('passwordInput').focus();
+            // Initial focus on password input
+            if (passwordOverlay.style.display !== 'none') {
+                passwordInput.focus();
             }
 
 
-            // --- SUPABASE INTEGRATION FUNCTIONS ---
-
+            // --- Core Supabase Data Loading Functions ---
+            // These functions now use 'supabaseClientInstance' which is initialized in DOMContentLoaded
             async function loadPlayerAndMatchupData() {
                 const playerName = document.getElementById('playerNameInput').value.trim();
                 const playerTeam = document.getElementById('playerTeamInput').value.trim().toUpperCase();
@@ -972,10 +984,20 @@ Where:
                     loadingStatusDiv.style.display = 'none';
                     return;
                 }
+                
+                // Ensure supabaseClientInstance is available
+                if (!supabaseClientInstance) {
+                    const msg = "Supabase client not initialized. Check console for errors. Make sure URL/Key are set.";
+                    errorStatusDiv.textContent = msg;
+                    errorStatusDiv.style.display = 'block';
+                    loadingStatusDiv.style.display = 'none';
+                    console.error(msg);
+                    return;
+                }
 
                 try {
                     // 1. Get Opponent's Coverage Frequencies to find the most frequent one
-                    const { data: defCoverageFreqData, error: defCoverageFreqError } = await supabase
+                    const { data: defCoverageFreqData, error: defCoverageFreqError } = await supabaseClientInstance
                         .from('defensive_coverages')
                         .select('man_pct, cover_0_pct, cover_1_pct, cover_2_pct, cover_2_man_pct, cover_3_pct, cover_4_pct, cover_6_pct, zone_pct')
                         .eq('team_name', opponentTeam)
@@ -989,7 +1011,6 @@ Where:
                         throw new Error(`No coverage frequency data found for ${opponentTeam} in ${season}.`);
                     }
 
-                    // Determine the most frequent coverage type
                     const coverageTypes = [
                         { name: 'Man Coverage', pct: defCoverageFreqData.man_pct },
                         { name: 'Cover 0', pct: defCoverageFreqData.cover_0_pct },
@@ -1017,10 +1038,10 @@ Where:
                     console.log(`Most frequent coverage for ${opponentTeam} in ${season}: ${mostFrequentCoverage} (${maxFreq}%)`);
 
 
-                    // 2. Get Player Stats for the determined coverage type AND Overall for Target Share
-                    const { data: playerStatsOverallData, error: playerStatsOverallError } = await supabase
+                    // 2. Get Player Stats for Overall (for Target Share)
+                    const { data: playerStatsOverallData, error: playerStatsOverallError } = await supabaseClientInstance
                         .from('player_cover_stats')
-                        .select('tprr_player')
+                        .select('tprr_player') 
                         .eq('player_name', playerName)
                         .eq('team', playerTeam)
                         .eq('season', season)
@@ -1037,10 +1058,10 @@ Where:
                         console.warn(`No overall player data found for target share for ${playerName} in ${season}. Defaulting Target Share to 0.`);
                     }
 
-                    // Get Player Stats for the MOST FREQUENT coverage type
-                    const { data: playerStatsCoverageData, error: playerStatsCoverageError } = await supabase
+                    // Get Player Stats for the MOST FREQUENT coverage type (for TPRR vs Coverage Type and Separation)
+                    const { data: playerStatsCoverageData, error: playerStatsCoverageError } = await supabaseClientInstance
                         .from('player_cover_stats')
-                        .select('tprr_player, separation_score')
+                        .select('tprr_player, separation_score') 
                         .eq('player_name', playerName)
                         .eq('team', playerTeam)
                         .eq('season', season)
@@ -1048,21 +1069,20 @@ Where:
                         .single();
 
                     if (playerStatsCoverageError) {
-                        throw new Error(`Error fetching player stats for ${mostFrequentCoverage}: ${playerStatsCoverageError.message}`);
+                        throw new Error(`Error fetching player stats for ${mostFrequentCoverage}: ${playerStatsCoverageData.message}`); // Fix: Use error.message here
                     }
                     if (!playerStatsCoverageData) {
                         throw new Error(`No player data found for ${playerName} vs ${mostFrequentCoverage} in ${season}.`);
                     }
 
-                    // Set player metrics inputs
                     document.getElementById('tprr').value = (playerStatsCoverageData.tprr_player * 100).toFixed(1); 
                     document.getElementById('sepScore').value = (playerStatsCoverageData.separation_score !== null) ? playerStatsCoverageData.separation_score.toFixed(3) : 0; 
 
 
                     // 3. Get Defensive Matchup Stats for the determined coverage type
-                    const { data: defMatchupData, error: defMatchupError } = await supabase
+                    const { data: defMatchupData, error: defMatchupError } = await supabaseClientInstance
                         .from('defensive_matchups')
-                        .select('tprr_allowed, catch_rate_allowed')
+                        .select('tprr_allowed, catch_rate_allowed') 
                         .eq('defensive_team_name', opponentTeam)
                         .eq('season', season)
                         .eq('coverage_type', mostFrequentCoverage) 
@@ -1075,7 +1095,6 @@ Where:
                         throw new Error(`No defensive matchup data found for ${opponentTeam} vs ${mostFrequentCoverage} in ${season}.`);
                     }
 
-                    // Set defensive metrics inputs
                     document.getElementById('defTPRR').value = (defMatchupData.tprr_allowed * 100).toFixed(1); 
                     document.getElementById('defCatchRate').value = defMatchupData.catch_rate_allowed.toFixed(1);
 
@@ -1090,21 +1109,18 @@ Where:
                 }
             }
             
-            // ... (Your calculateScore and createBarChart functions - unchanged) ...
-
+            // --- Calculation Logic ---
             function calculateScore() {
-                // Get input values
                 const tprr = parseFloat(document.getElementById('tprr').value) || 0;
                 const sepScore = parseFloat(document.getElementById('sepScore').value) || 0;
                 const targetShare = parseFloat(document.getElementById('targetShare').value) || 0;
                 const routesPerGame = parseFloat(document.getElementById('routesPerGame').value) || 0;
                 const gameFlow = parseFloat(document.getElementById('gameFlow').value) || 3;
-                const coverageFreq = parseFloat(document.getElementById('coverageFreq').value) || 25; // Default 25%
+                const coverageFreq = parseFloat(document.getElementById('coverageFreq').value) || 25; 
                 const defTPRR = parseFloat(document.getElementById('defTPRR').value) || 0;
                 const defCatchRate = parseFloat(document.getElementById('defCatchRate').value) || 0;
                 const projectedLine = parseFloat(document.getElementById('projectedLine').value) || 0;
                 
-                // Calculate coverage frequency weight and impact
                 let coverageWeight = coverageFreq / 100;
                 let coverageImpactText = "";
                 let coverageImpactClass = "";
@@ -1122,54 +1138,42 @@ Where:
                     coverageImpactClass = "coverage-medium";
                 }
                 
-                // Estimate base TPRR from target share
-                const estimatedBaseTPRR = targetShare * 0.85;
-                
-                // Calculate weighted TPRR
+                const estimatedBaseTPRR = targetShare * 0.85; 
                 const weightedTPRR = (tprr * coverageWeight) + (estimatedBaseTPRR * (1 - coverageWeight));
                 
-                // Coverage TPRR - using weighted value
                 const coverageAdjBase = (weightedTPRR / 25) * 10;
                 const coverageAdjTPRR = Math.pow(Math.min(coverageAdjBase, 12), 2);
                 
-                // Separation - squared with lower baseline
                 const sepBase = (sepScore / 0.25) * 10;
                 const normalizedSep = Math.pow(Math.min(sepBase, 12), 2);
                 
-                // Volume Factor - linear but capped
                 const volumeFactor = Math.min((targetShare * routesPerGame) / 100, 100);
                 
-                // Matchup Factor - only positive for above-average defenses
                 const defTPRRDiff = Math.max(0, defTPRR - 18.5);
                 const defCatchDiff = Math.max(0, defCatchRate - 63);
                 const matchupFactor = (defTPRRDiff + defCatchDiff) / 2;
                 
-                // Game Context - scaled from 0-100
                 const gameContextFactor = (gameFlow - 1) * 25;
                 
-                // Calculate base score
                 const baseScore = (0.35 * coverageAdjTPRR) + 
                                 (0.25 * normalizedSep) + 
                                 (0.20 * volumeFactor) + 
                                 (0.15 * matchupFactor) + 
                                 (0.10 * gameContextFactor);
                 
-                // Apply penalty for poor TPRR
                 let qualityMultiplier = 1.0;
                 let penaltyText = "";
                 
                 if (tprr < 20) {
                     qualityMultiplier = 0.75;
                     penaltyText = "Low TPRR penalty applied (-25%)";
-                }
+                } 
                 
                 const finalScore = baseScore * qualityMultiplier;
                 
-                // Adjust expected receptions based on game context
                 const gameFlowMultiplier = 0.8 + (gameFlow * 0.1);
                 const expectedReceptions = (routesPerGame * (weightedTPRR / 100) * (defCatchRate / 100) * gameFlowMultiplier).toFixed(1);
                 
-                // Update display
                 document.getElementById('coverageAdjTPRR').textContent = coverageAdjTPRR.toFixed(1);
                 document.getElementById('normalizedSep').textContent = normalizedSep.toFixed(1);
                 document.getElementById('volumeFactor').textContent = volumeFactor.toFixed(1);
@@ -1178,13 +1182,11 @@ Where:
                 document.getElementById('finalScore').textContent = finalScore.toFixed(1);
                 document.getElementById('expectedReceptions').textContent = expectedReceptions;
                 
-                // Show coverage impact indicator
                 const coverageImpactDiv = document.getElementById('coverageImpact');
-                coverageImpactDiv.textContent = coverageImpactText;
-                coverageImpactDiv.className = 'coverage-impact ' + coverageImpactClass;
+                coverageImpactDiv.textContent = coverageImpactText; // Use the value from load function or calculate new based on local inputs
+                coverageImpactDiv.className = 'coverage-impact ' + coverageImpactClass; // Use class from load function
                 coverageImpactDiv.style.display = 'block';
                 
-                // Show penalty indicator if applicable
                 const penaltyIndicator = document.getElementById('penaltyIndicator');
                 if (penaltyText) {
                     penaltyIndicator.textContent = penaltyText;
@@ -1193,7 +1195,6 @@ Where:
                     penaltyIndicator.style.display = 'none';
                 }
                 
-                // Create bar chart
                 createBarChart({
                     'Coverage TPRR': coverageAdjTPRR,
                     'Separation': normalizedSep,
@@ -1202,17 +1203,15 @@ Where:
                     'Game Context': gameContextFactor
                 });
                 
-                // Line comparison
                 const lineDiff = parseFloat(expectedReceptions) - projectedLine;
                 let lineCompText = '';
                 if (lineDiff > 0) {
                     lineCompText = `+${lineDiff.toFixed(1)} (OVER)`;
                 } else {
-                    lineCompText = `${lineDiff.toFixed(1)} (UNDER)`;
+                    lCompText = `${lineDiff.toFixed(1)} (UNDER)`;
                 }
                 document.getElementById('lineComparison').textContent = lineCompText;
                 
-                // Score interpretation
                 let interpretation = '';
                 let interpretClass = '';
                 
@@ -1234,7 +1233,6 @@ Where:
                 interpretDiv.textContent = interpretation;
                 interpretDiv.className = 'score-interpretation ' + interpretClass;
                 
-                // Show results
                 document.getElementById('results').style.display = 'block';
             }
             
@@ -1253,7 +1251,6 @@ Where:
                     const height = (value / maxValue) * 100;
                     bar.style.height = height + '%';
                     
-                    // Color based on value
                     if (value >= 80) {
                         bar.style.backgroundColor = '#22c55e';
                     } else if (value >= 40) {
@@ -1277,58 +1274,25 @@ Where:
                 }
             }
             
-            // Add touch event support for mobile for calculate button
-            const calculateButton = document.querySelector('.calculate-btn');
-            if (calculateButton) {
-                calculateButton.addEventListener('touchstart', function(e) {
-                    e.preventDefault();
-                    calculateScore();
-                }, { passive: false });
-            }
-
-            // Add touch event support for mobile for load data button
+            // --- Attach Event Listeners after DOMContentLoaded ---
             const loadDataButton = document.querySelector('.load-data-btn');
             if (loadDataButton) {
+                loadDataButton.addEventListener('click', loadPlayerAndMatchupData);
                 loadDataButton.addEventListener('touchstart', function(e) {
-                    e.preventDefault();
+                    e.preventDefault(); // Prevent double-trigger on some mobile browsers
                     loadPlayerAndMatchupData();
                 }, { passive: false });
             }
 
-            // Password handling for initial load
-            const passwordInput = document.getElementById('passwordInput');
-            const passwordOverlay = document.getElementById('passwordOverlay');
-            const mainContent = document.getElementById('mainContent');
-            const passwordError = document.getElementById('passwordError');
-
-            document.getElementById('passwordSubmit').addEventListener('click', checkPassword);
-            passwordInput.addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    checkPassword();
-                }
-            });
-
-            if (passwordOverlay.style.display !== 'none') {
-                passwordInput.focus();
+            const calculateButton = document.querySelector('.calculate-btn');
+            if (calculateButton) {
+                calculateButton.addEventListener('click', calculateScore);
+                calculateButton.addEventListener('touchstart', function(e) {
+                    e.preventDefault(); // Prevent double-trigger
+                    calculateScore();
+                }, { passive: false });
             }
-
-            function checkPassword() {
-                const password = passwordInput.value;
-                const correctPassword = 'BALLSTICK';
-
-                if (password === correctPassword) {
-                    passwordOverlay.style.display = 'none';
-                    mainContent.style.display = 'block';
-                } else {
-                    passwordError.style.display = 'block';
-                    passwordInput.value = '';
-                    passwordInput.focus();
-                    setTimeout(() => {
-                        passwordError.style.display = 'none';
-                    }, 3000);
-                }
-            }
-        }); // END of DOMContentLoaded
+        }); // End of DOMContentLoaded listener
     </script>
 </body>
 </html>
