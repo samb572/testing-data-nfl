@@ -447,6 +447,14 @@
                     </div>
 
                     <div class="input-group">
+                        <label for="gamelog-upload">Upload QB Game Log CSV</label>
+                        <input type="file" id="gamelog-upload" accept=".csv" onchange="handleGameLogUpload(event)">
+                        <div class="csv-info">
+                            Upload the FantasyPros QB fantasy points CSV for actual game results.
+                        </div>
+                    </div>
+
+                    <div class="input-group">
                         <label for="min-games">Minimum Games Played</label>
                         <input type="number" id="min-games" value="10" min="1" max="17">
                     </div>
@@ -468,7 +476,7 @@
                 <div class="results-area">
                     <div id="audit-results">
                         <div class="loading">
-                            Upload a CSV file and click "Run Season Audit" to analyze QB projections...
+                            Upload CSV files and click "Run Season Audit" to analyze QB projections...
                         </div>
                     </div>
                 </div>
@@ -484,6 +492,7 @@
         let supabaseClient;
         let qbData = [];
         let csvData = [];
+        let gameLogData = [];
 
         // Initialize Supabase when DOM loads
         document.addEventListener('DOMContentLoaded', async function() {
@@ -622,10 +631,8 @@
                 populateQBSelect();
                 showStatus('Quarterback data loaded successfully!', 'success');
 
-                // Enable audit button if CSV is loaded
-                if (csvData.length > 0) {
-                    document.getElementById('audit-btn').disabled = false;
-                }
+                // Enable audit button if CSV files are loaded
+                checkAuditButtonStatus();
 
             } catch (error) {
                 console.error('Error loading QB data:', error);
@@ -748,7 +755,7 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            showAuditStatus('Parsing CSV file...', 'loading');
+            showAuditStatus('Parsing odds CSV file...', 'loading');
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -757,22 +764,90 @@
                     header: true,
                     complete: function(results) {
                         csvData = results.data.filter(row => row.game_id && row.home_team && row.away_team);
-                        console.log('CSV loaded:', csvData.length, 'games');
+                        console.log('Odds CSV loaded:', csvData.length, 'games');
                         
-                        // Enable audit button if QBs are loaded
-                        if (qbData.length > 0) {
-                            document.getElementById('audit-btn').disabled = false;
-                        }
-                        
-                        showAuditStatus(`CSV loaded successfully! ${csvData.length} games found.`, 'success');
+                        checkAuditButtonStatus();
+                        showAuditStatus(`Odds CSV loaded successfully! ${csvData.length} games found.`, 'success');
                     },
                     error: function(error) {
                         console.error('CSV parsing error:', error);
-                        showAuditStatus('Error parsing CSV file', 'error');
+                        showAuditStatus('Error parsing odds CSV file', 'error');
                     }
                 });
             };
             reader.readAsText(file);
+        }
+
+        // Game Log CSV Upload
+        function handleGameLogUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            showAuditStatus('Parsing game log CSV file...', 'loading');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csv = e.target.result;
+                Papa.parse(csv, {
+                    header: true,
+                    complete: function(results) {
+                        // Process the game log data
+                        gameLogData = processGameLogData(results.data);
+                        console.log('Game log CSV loaded:', Object.keys(gameLogData).length, 'players');
+                        
+                        checkAuditButtonStatus();
+                        showAuditStatus(`Game log CSV loaded successfully! ${Object.keys(gameLogData).length} players found.`, 'success');
+                    },
+                    error: function(error) {
+                        console.error('Game log parsing error:', error);
+                        showAuditStatus('Error parsing game log CSV file', 'error');
+                    }
+                });
+            };
+            reader.readAsText(file);
+        }
+
+        function processGameLogData(rawData) {
+            const processed = {};
+            
+            rawData.forEach(row => {
+                if (!row.Player || !row.Team) return;
+                
+                const playerName = row.Player.trim();
+                const team = row.Team.trim();
+                
+                // Skip if player already processed or no valid data
+                if (processed[playerName]) return;
+                
+                const weeklyScores = [];
+                
+                // Process weeks 1-18
+                for (let week = 1; week <= 18; week++) {
+                    const score = parseFloat(row[week.toString()]);
+                    if (!isNaN(score)) {
+                        weeklyScores.push({
+                            week: week,
+                            points: score
+                        });
+                    }
+                }
+                
+                if (weeklyScores.length > 0) {
+                    processed[playerName] = {
+                        team: team,
+                        weeklyScores: weeklyScores
+                    };
+                }
+            });
+            
+            return processed;
+        }
+
+        function checkAuditButtonStatus() {
+            const auditBtn = document.getElementById('audit-btn');
+            if (qbData.length > 0 && csvData.length > 0 && Object.keys(gameLogData).length > 0) {
+                auditBtn.disabled = false;
+            }
         }
 
         // Team name mapping for consistency
@@ -811,25 +886,30 @@
             }
         }
 
-        // Mock actual FP generator (replace with real data when available)
-        function generateMockActualFP(projected, qbAvg) {
-            const variance = 0.3;
-            const consistency = Math.min(qbAvg * 50, 1.0);
-            const adjustedVariance = variance * (1 - consistency * 0.3);
+        function getActualFantasyPoints(playerName, week) {
+            const playerData = gameLogData[playerName];
+            if (!playerData) {
+                // Try to find by partial name match
+                const matchingPlayer = Object.keys(gameLogData).find(name => 
+                    name.toLowerCase().includes(playerName.toLowerCase().split(' ')[0]) ||
+                    playerName.toLowerCase().includes(name.toLowerCase().split(' ')[0])
+                );
+                
+                if (matchingPlayer) {
+                    const weekData = gameLogData[matchingPlayer].weeklyScores.find(w => w.week === week);
+                    return weekData ? weekData.points : null;
+                }
+                return null;
+            }
             
-            const randomFactor = 1 + ((Math.random() - 0.5) * adjustedVariance * 2);
-            let actual = projected * randomFactor;
-            
-            // Keep within reasonable bounds
-            actual = Math.max(3, Math.min(actual, 50));
-            
-            return actual;
+            const weekData = playerData.weeklyScores.find(w => w.week === week);
+            return weekData ? weekData.points : null;
         }
 
         // Season Audit
         async function runSeasonAudit() {
-            if (csvData.length === 0 || qbData.length === 0) {
-                showAuditStatus('Please upload CSV and ensure QB data is loaded', 'error');
+            if (csvData.length === 0 || qbData.length === 0 || Object.keys(gameLogData).length === 0) {
+                showAuditStatus('Please upload both CSV files and ensure QB data is loaded', 'error');
                 return;
             }
 
@@ -880,6 +960,7 @@
                         
                         const spread = isHome ? parseFloat(game.dk_spread_home) : parseFloat(game.dk_spread_away);
                         const total = parseFloat(game.dk_total_point);
+                        const week = getWeekFromDate(game.commence_time);
 
                         const gameContext = {
                             spread: isNaN(spread) ? null : spread,
@@ -888,26 +969,27 @@
 
                         const projection = projector.calculateProjection(qb, gameContext);
                         
-                        if (projection) {
-                            const week = getWeekFromDate(game.commence_time);
+                        if (projection && typeof week === 'number') {
                             const projectedFP = projection.totalProjectedFP;
-                            const actualFP = generateMockActualFP(projectedFP, qb.weighted_fp_per_db);
+                            const actualFP = getActualFantasyPoints(qb.name, week);
                             
-                            weeklyResults.push({
-                                week: week,
-                                date: game.commence_time.split('T')[0],
-                                opponent: opponent,
-                                isHome: isHome,
-                                spread: spread,
-                                total: total,
-                                projected: projectedFP,
-                                actual: actualFP,
-                                diff: actualFP - projectedFP,
-                                accuracy: Math.max(0, 1 - (Math.abs(actualFP - projectedFP) / Math.max(actualFP, 1)))
-                            });
+                            if (actualFP !== null) {
+                                weeklyResults.push({
+                                    week: week,
+                                    date: game.commence_time.split('T')[0],
+                                    opponent: opponent,
+                                    isHome: isHome,
+                                    spread: spread,
+                                    total: total,
+                                    projected: projectedFP,
+                                    actual: actualFP,
+                                    diff: actualFP - projectedFP,
+                                    accuracy: Math.max(0, 1 - (Math.abs(actualFP - projectedFP) / Math.max(actualFP, 1)))
+                                });
 
-                            totalProjected += projectedFP;
-                            totalActual += actualFP;
+                                totalProjected += projectedFP;
+                                totalActual += actualFP;
+                            }
                         }
                     } catch (error) {
                         console.error('Error processing game:', error);
@@ -928,7 +1010,7 @@
                         totalDiff: totalActual - totalProjected,
                         totalAccuracy: totalAccuracy,
                         avgWeeklyAccuracy: avgAccuracy,
-                        weeklyResults: weeklyResults.sort((a, b) => new Date(a.date) - new Date(b.date))
+                        weeklyResults: weeklyResults.sort((a, b) => a.week - b.week)
                     });
                 }
 
@@ -1037,7 +1119,7 @@
                     
                     html += `
                         <div class="week-item">
-                            <div style="font-weight: 600; margin-bottom: 5px;">${week.week}</div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">Week ${week.week}</div>
                             <div style="font-size: 0.8rem; margin-bottom: 3px;">${homeAway} ${week.opponent}</div>
                             <div style="font-size: 0.7rem; margin-bottom: 3px;">${week.date}</div>
                             <div class="week-projected">P: ${week.projected.toFixed(1)}</div>
@@ -1059,7 +1141,7 @@
             });
 
             auditResultsDiv.innerHTML = html;
-            showAuditStatus(`Audit completed! Analyzed ${results.length} QBs across ${totalGames} total games.`, 'success');
+            showAuditStatus(`Audit completed! Analyzed ${results.length} QBs across ${totalGames} total games with real data.`, 'success');
         }
 
         function showStatus(message, type) {
