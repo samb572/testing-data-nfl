@@ -106,7 +106,8 @@
         }
 
         .input-group select,
-        .input-group input {
+        .input-group input,
+        .input-group input[type="file"] {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e5e7eb;
@@ -122,7 +123,7 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        .project-btn {
+        .project-btn, .audit-btn {
             width: 100%;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
@@ -135,9 +136,29 @@
             transition: transform 0.2s;
             margin-bottom: 10px;
         }
+        
+        .audit-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
 
-        .project-btn:hover {
+        .project-btn:hover, .audit-btn:hover {
             transform: translateY(-2px);
+        }
+        
+        .project-btn:disabled, .audit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .csv-info {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 0.9rem;
         }
 
         .results-area {
@@ -155,20 +176,9 @@
             position: relative;
         }
 
-        .boom-matchup {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            border-left: 5px solid #10b981;
-        }
-
-        .bust-matchup {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-            border-left: 5px solid #ef4444;
-        }
-
-        .neutral-matchup {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border-left: 5px solid #64748b;
-        }
+        .boom-matchup { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-left-color: #10b981; }
+        .bust-matchup { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-left-color: #ef4444; }
+        .neutral-matchup { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-left-color: #64748b; }
 
         .projection-header {
             display: flex;
@@ -177,20 +187,8 @@
             margin-bottom: 20px;
         }
 
-        .qb-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0f172a;
-        }
-
-        .opponent {
-            background: #dc2626;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
+        .qb-name { font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+        .opponent { background: #dc2626; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; }
 
         .matchup-indicator {
             position: absolute;
@@ -209,134 +207,44 @@
         .bust-indicator { background: #ef4444; color: white; }
         .neutral-indicator { background: #64748b; color: white; }
 
-        .projection-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #0ea5e9;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #64748b;
-            font-weight: 500;
-        }
+        .projection-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
+        .stat-value { font-size: 2rem; font-weight: 700; color: #0ea5e9; margin-bottom: 5px; }
+        .stat-label { font-size: 0.9rem; color: #64748b; font-weight: 500; }
         
-        .coverage-analysis {
-            background: #f0f9ff;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            border: 1px solid #bfdbfe;
-        }
-        .coverage-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #1e3a8a;
-            margin-bottom: 15px;
-        }
-        .coverage-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            align-items: center;
-        }
-        .coverage-label {
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 8px;
-        }
-        .coverage-impact-card {
-            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            grid-column: 1 / -1;
-        }
-        .coverage-impact-value {
-             font-size: 1.5rem;
-             font-weight: 700;
-             color: #1e40af;
-        }
+        .coverage-analysis { background: #f0f9ff; border-radius: 12px; padding: 20px; margin-top: 20px; border: 1px solid #bfdbfe; }
+        .coverage-title { font-size: 1.2rem; font-weight: 600; color: #1e3a8a; margin-bottom: 15px; }
+        .coverage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center; }
+        .coverage-label { font-weight: 600; color: #374151; margin-bottom: 8px; }
+        .coverage-impact-card { background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); padding: 20px; border-radius: 12px; text-align: center; grid-column: 1 / -1; }
+        .coverage-impact-value { font-size: 1.5rem; font-weight: 700; color: #1e40af; }
 
-        .breakdown-section {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .breakdown-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 15px;
-        }
-
-        .breakdown-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .breakdown-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .breakdown-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #0f172a;
-        }
-
-        .breakdown-label {
-            font-size: 0.8rem;
-            color: #64748b;
-            margin-top: 5px;
-        }
+        .breakdown-section { background: #f8fafc; border-radius: 12px; padding: 20px; margin-top: 20px; }
+        .breakdown-title { font-size: 1.2rem; font-weight: 600; color: #374151; margin-bottom: 15px; }
+        .breakdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .breakdown-item { background: white; padding: 15px; border-radius: 8px; text-align: center; }
+        .breakdown-value { font-size: 1.1rem; font-weight: 600; color: #0f172a; }
         
-        .loading {
-            text-align: center;
-            color: #64748b;
-            font-style: italic;
-            padding: 40px;
-        }
+        .loading { text-align: center; color: #64748b; font-style: italic; padding: 40px; }
+        .error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 15px; border-radius: 10px; margin: 10px 0; }
+        .success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #059669; padding: 15px; border-radius: 10px; margin: 10px 0; }
+        
+        /* Audit styles */
+        .audit-summary { background: linear-gradient(135deg, #fef3c7 0%, #fef3c7 100%); border-radius: 15px; padding: 20px; margin-bottom: 25px; border-left: 5px solid #f59e0b; }
+        .player-audit-card { background: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #10b981; }
+        .player-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .player-name { font-size: 1.3rem; font-weight: 700; color: #0f172a; }
+        .accuracy-score { background: #10b981; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; }
+        .weekly-breakdown { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 15px; }
+        .week-item { background: white; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.9rem; border-left: 3px solid #e5e7eb; }
+        .week-boom { border-left-color: #10b981; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
+        .week-bust { border-left-color: #ef4444; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); }
+        .week-projected { color: #059669; font-weight: 600; }
+        .week-actual { color: #dc2626; font-weight: 600; }
+        .week-diff { color: #6b7280; font-size: 0.8rem; }
+        .progress-bar { width: 100%; height: 20px; background: #e5e7eb; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #10b981, #059669); transition: width 0.3s ease; }
 
-        .error {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
-        }
-
-        .success {
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            color: #059669;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
-        }
 
         @media (max-width: 968px) {
             .main-content { grid-template-columns: 1fr; }
@@ -402,10 +310,55 @@
                 </div>
             </div>
         </div>
-
+        
         <div id="audit-tab" class="tab-content">
-             <div class="loading">Audit functionality placeholder.</div>
+            <div class="main-content">
+                <div class="sidebar">
+                    <div class="input-group">
+                        <label for="csv-upload">Upload 2024 NFL Odds CSV</label>
+                        <input type="file" id="csv-upload" accept=".csv" onchange="handleCSVUpload(event)">
+                        <div class="csv-info">
+                           Required columns: `home_team`, `away_team`, `commence_time`, `dk_spread_home`, `dk_spread_away`, `dk_total_point`.
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="gamelog-upload">Upload QB Game Log CSV</label>
+                        <input type="file" id="gamelog-upload" accept=".csv" onchange="handleGameLogUpload(event)">
+                        <div class="csv-info">
+                           Required columns: `Player`, `Team`, and columns `1` through `18` for weekly fantasy points.
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="min-games">Minimum Games Played</label>
+                        <input type="number" id="min-games" value="8" min="1" max="18">
+                    </div>
+
+                    <button class="audit-btn" id="audit-btn" onclick="runSeasonAudit()" disabled>
+                        Run Statistical Audit
+                    </button>
+                    
+                    <div id="audit-progress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+                        </div>
+                        <div id="progress-text">Processing...</div>
+                    </div>
+
+                    <div id="audit-status"></div>
+                </div>
+
+                <div class="results-area">
+                    <div id="audit-results">
+                        <div class="loading">
+                            Upload both CSV files to run a full season projection audit.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
     </div>
 
     <script>
@@ -415,6 +368,8 @@
         let supabaseClient;
         let qbData = [];
         let defenseData = [];
+        let csvData = [];
+        let gameLogData = {};
 
         document.addEventListener('DOMContentLoaded', async function() {
             try {
@@ -424,7 +379,7 @@
                 await Promise.all([loadQBData(), loadDefenseData()]);
             } catch (error) {
                 console.error('❌ Failed to initialize:', error);
-                showStatus('Failed to initialize database connection', 'error');
+                showStatus('Failed to initialize database connection', 'error', 'status-message');
             }
         });
 
@@ -442,11 +397,8 @@
                 }
 
                 const baseFpdb = qb.weighted_fp_per_db || 0.43;
-                
-                // Use correct column names from `player_summary` table
                 const qbVsMan = qb.man_fp_db ?? baseFpdb;
                 const qbVsZone = qb.zone_fp_db ?? baseFpdb;
-                // Simplified blitz performance for this model
                 const qbVsBlitz = ((qbVsMan + qbVsZone) / 2) * 1.05;
 
                 const manRate = (opponentDefense.man_coverage_rate || 30) / 100;
@@ -478,15 +430,10 @@
                     const estimatedDropbacks = qb.total_dropbacks ? Math.round(qb.total_dropbacks / 17) : 35;
                     
                     let gameScriptMultiplier = 1.0;
-                    if (gameContext.spread !== null) {
-                        gameScriptMultiplier *= this.getSpreadMultiplier(gameContext.spread);
-                    }
-                    if (gameContext.total !== null) {
-                        gameScriptMultiplier *= this.getTotalMultiplier(gameContext.total);
-                    }
+                    if (gameContext.spread !== null) gameScriptMultiplier *= this.getSpreadMultiplier(gameContext.spread);
+                    if (gameContext.total !== null) gameScriptMultiplier *= this.getTotalMultiplier(gameContext.total);
 
                     const { multiplier: coverageImpactMultiplier, breakdown: coverageBreakdown } = this.calculateCoverageImpact(qb, opponentDefense);
-
                     const totalMultiplier = gameScriptMultiplier * coverageImpactMultiplier;
                     const adjustedFPPerDB = baseFPPerDB * totalMultiplier;
                     const totalProjectedFP = adjustedFPPerDB * estimatedDropbacks;
@@ -496,14 +443,8 @@
                     if (coverageImpactMultiplier < 0.93) matchupType = 'bust';
 
                     return {
-                        totalProjectedFP,
-                        adjustedFPPerDB,
-                        estimatedDropbacks,
-                        matchupType,
-                        coverageImpact: {
-                            multiplier: coverageImpactMultiplier,
-                            breakdown: coverageBreakdown
-                        },
+                        totalProjectedFP, adjustedFPPerDB, estimatedDropbacks, matchupType,
+                        coverageImpact: { multiplier: coverageImpactMultiplier, breakdown: coverageBreakdown },
                         adjustmentBreakdown: {
                             spreadAdj: gameContext.spread !== null ? this.getSpreadMultiplier(gameContext.spread) : 1.0,
                             totalAdj: gameContext.total !== null ? this.getTotalMultiplier(gameContext.total) : 1.0,
@@ -516,116 +457,21 @@
                 }
             }
 
-            getSpreadMultiplier(spread) {
-                const s = this.gameScriptAdjustments.spread;
-                if (spread <= -14) return s.bigFavorite;
-                if (spread <= -7) return s.favorite;
-                if (spread <= -3) return s.smallFavorite;
-                if (spread <= 2.5) return s.pickEm;
-                if (spread <= 6.5) return s.smallUnderdog;
-                if (spread <= 13.5) return s.underdog;
-                return s.bigUnderdog;
-            }
-
-            getTotalMultiplier(total) {
-                const t = this.gameScriptAdjustments.total;
-                if (total < 40) return t.veryLow;
-                if (total < 45) return t.low;
-                if (total < 50) return t.average;
-                if (total < 55) return t.high;
-                return t.veryHigh;
-            }
+            getSpreadMultiplier(spread) { const s = this.gameScriptAdjustments.spread; if (spread <= -14) return s.bigFavorite; if (spread <= -7) return s.favorite; if (spread <= -3) return s.smallFavorite; if (spread <= 2.5) return s.pickEm; if (spread <= 6.5) return s.smallUnderdog; if (spread <= 13.5) return s.underdog; return s.bigUnderdog; }
+            getTotalMultiplier(total) { const t = this.gameScriptAdjustments.total; if (total < 40) return t.veryLow; if (total < 45) return t.low; if (total < 50) return t.average; if (total < 55) return t.high; return t.veryHigh; }
         }
 
         const projector = new EnhancedQBMatchupAnalyzer();
 
-        async function loadQBData() {
-            try {
-                console.log('📈 Loading QB data from player_summary...');
-                
-                // **FIXED QUERY**: Fetches from player_summary and joins player name/team
-                const { data, error } = await supabaseClient
-                    .from('player_summary')
-                    .select('*, players(name, team)')
-                    .not('players', 'is', null)
-                    .gt('weighted_fp_per_db', 0.1)
-                    .order('weighted_fp_per_db', { ascending: false })
-                    .limit(50);
-
-                if (error) throw error;
-                if (!data || data.length === 0) throw new Error('No quarterback summary data found');
-
-                qbData = data;
-                console.log(`✅ Loaded ${qbData.length} quarterbacks`);
-                populateQBSelect();
-                showStatus('Quarterback data loaded!', 'success');
-            } catch (error) {
-                console.error('❌ Error loading QB data:', error);
-                showStatus(`Failed to load QB data: ${error.message}`, 'error');
-                document.getElementById('qb-select').innerHTML = '<option value="">Failed to load QBs</option>';
-            }
-        }
-
-        async function loadDefenseData() {
-            try {
-                console.log('🛡️ Loading defense data...');
-                const { data, error } = await supabaseClient
-                    .from('opponent_defense_tendencies')
-                    .select('*')
-                    .order('team', { ascending: true });
-
-                if (error) throw error;
-                defenseData = data;
-                console.log(`✅ Loaded ${defenseData.length} team defenses`);
-                populateOpponentSelect();
-            } catch (error) {
-                console.error('❌ Error loading defense data:', error);
-                populateOpponentSelect();
-            }
-        }
-
-        function populateQBSelect() {
-            const select = document.getElementById('qb-select');
-            select.innerHTML = '<option value="">Select a quarterback</option>';
-            qbData.forEach((qb) => {
-                const option = document.createElement('option');
-                // The player object is now nested
-                option.value = qb.player_id;
-                option.textContent = `${qb.players.name} (${qb.players.team}) - ${qb.weighted_fp_per_db.toFixed(3)} FP/DB`;
-                select.appendChild(option);
-            });
-        }
-
-        function populateOpponentSelect() {
-            const select = document.getElementById('opponent-select');
-            select.innerHTML = '<option value="">Select opponent</option>';
-            const teams = defenseData.length > 0 ? defenseData : [
-                { team: 'ARI', team_name: 'Arizona Cardinals' }, { team: 'ATL', team_name: 'Atlanta Falcons' },
-                { team: 'BAL', team_name: 'Baltimore Ravens' }, { team: 'BUF', team_name: 'Buffalo Bills' },
-                { team: 'CAR', team_name: 'Carolina Panthers' }, { team: 'CHI', team_name: 'Chicago Bears' },
-                { team: 'CIN', team_name: 'Cincinnati Bengals' }, { team: 'CLE', team_name: 'Cleveland Browns' },
-                { team: 'DAL', team_name: 'Dallas Cowboys' }, { team: 'DEN', team_name: 'Denver Broncos' },
-                { team: 'DET', team_name: 'Detroit Lions' }, { team: 'GB', team_name: 'Green Bay Packers' },
-                { team: 'HOU', team_name: 'Houston Texans' }, { team: 'IND', team_name: 'Indianapolis Colts' },
-                { team: 'JAX', team_name: 'Jacksonville Jaguars' }, { team: 'KC', team_name: 'Kansas City Chiefs' },
-                { team: 'LV', team_name: 'Las Vegas Raiders' }, { team: 'LAC', team_name: 'Los Angeles Chargers' },
-                { team: 'LAR', team_name: 'Los Angeles Rams' }, { team: 'MIA', team_name: 'Miami Dolphins' },
-                { team: 'MIN', team_name: 'Minnesota Vikings' }, { team: 'NE', team_name: 'New England Patriots' },
-                { team: 'NO', team_name: 'New Orleans Saints' }, { team: 'NYG', team_name: 'New York Giants' },
-                { team: 'NYJ', team_name: 'New York Jets' }, { team: 'PHI', team_name: 'Philadelphia Eagles' },
-                { team: 'PIT', team_name: 'Pittsburgh Steelers' }, { team: 'SF', team_name: 'San Francisco 49ers' },
-                { team: 'SEA', team_name: 'Seattle Seahawks' }, { team: 'TB', team_name: 'Tampa Bay Buccaneers' },
-                { team: 'TEN', team_name: 'Tennessee Titans' }, { team: 'WAS', team_name: 'Washington Commanders' },
-            ];
-            
-            teams.sort((a,b) => (a.team_name || a.team).localeCompare(b.team_name || b.team)).forEach((team) => {
-                const option = document.createElement('option');
-                option.value = team.team;
-                option.textContent = `${team.team_name || team.team} (${team.team})`;
-                select.appendChild(option);
-            });
-        }
-
+        // --- DATA LOADING ---
+        async function loadQBData() { /* ... unchanged ... */ }
+        async function loadDefenseData() { /* ... unchanged ... */ }
+        
+        // --- UI POPULATION ---
+        function populateQBSelect() { /* ... unchanged ... */ }
+        function populateOpponentSelect() { /* ... unchanged ... */ }
+        
+        // --- UI INTERACTION ---
         function switchTab(tabName) {
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -638,7 +484,7 @@
             const opponentTeam = document.getElementById('opponent-select').value;
 
             if (!qbId || !opponentTeam) {
-                showStatus('Please select a QB and Opponent', 'error');
+                showStatus('Please select a QB and Opponent', 'error', 'status-message');
                 return;
             }
 
@@ -653,14 +499,15 @@
             
             if (projection) {
                 displayProjection(selectedQB, projection, opponentDefense);
-                showStatus(`Analysis complete!`, 'success');
+                showStatus(`Analysis complete!`, 'success', 'status-message');
             } else {
-                showStatus('Failed to generate projection', 'error');
+                showStatus('Failed to generate projection', 'error', 'status-message');
             }
         }
         
+        // --- DISPLAY LOGIC ---
         function renderCoverageAnalysis(projection) {
-            if (!projection.coverageImpact.breakdown) {
+             if (!projection.coverageImpact.breakdown) {
                 return `<div class="coverage-analysis"><div class="coverage-title">🛡️ Coverage Matchup</div><div>No defensive data available.</div></div>`;
             }
 
@@ -669,28 +516,19 @@
             const impactColor = impactMultiplier >= 1 ? '#10b981' : '#ef4444';
             const impactSymbol = impactMultiplier >= 1 ? '▲' : '▼';
             
-            return `
-                <div class="coverage-analysis">
+            return `<div class="coverage-analysis">
                     <div class="coverage-title">🛡️ Coverage-Based Matchup</div>
                     <div class="coverage-grid">
-                        <div>
-                            <div class="coverage-label">${breakdown.man.rate.toFixed(1)}% Man Rate</div>
-                            <div class="coverage-label">${breakdown.zone.rate.toFixed(1)}% Zone Rate</div>
-                        </div>
-                        <div>
-                             <div class="coverage-label">${breakdown.man.qbFpdb.toFixed(3)} FP/DB vs Man</div>
-                             <div class="coverage-label">${breakdown.zone.qbFpdb.toFixed(3)} FP/DB vs Zone</div>
-                        </div>
+                        <div><div class="coverage-label">${breakdown.man.rate.toFixed(1)}% Man Rate</div><div class="coverage-label">${breakdown.zone.rate.toFixed(1)}% Zone Rate</div></div>
+                        <div><div class="coverage-label">${breakdown.man.qbFpdb.toFixed(3)} FP/DB vs Man</div><div class="coverage-label">${breakdown.zone.qbFpdb.toFixed(3)} FP/DB vs Zone</div></div>
                         <div class="coverage-impact-card">
                             <div class="coverage-label">Matchup-Adjusted FP/DB</div>
-                            <div class="coverage-impact-value" style="color: ${impactColor};">
-                                ${breakdown.expectedFpdb.toFixed(3)}
+                            <div class="coverage-impact-value" style="color: ${impactColor};">${breakdown.expectedFpdb.toFixed(3)}
                                 <span style="font-size: 1rem;">(${impactSymbol} ${(Math.abs(1 - impactMultiplier) * 100).toFixed(1)}%)</span>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
         function displayProjection(qb, projection, opponentDefense) {
@@ -704,63 +542,343 @@
             
             const coverageHTML = renderCoverageAnalysis(projection);
 
-            resultsDiv.innerHTML = `
-                <div class="${cardClass}">
+            resultsDiv.innerHTML = `<div class="${cardClass}">
                     <div class="${indicatorClass}">${indicatorIcon} ${indicatorText}</div>
-                    <div class="projection-header">
-                        <span class="qb-name">${qb.players.name} (${qb.players.team})</span>
-                        <span class="opponent">vs ${opponentName}</span>
-                    </div>
-
+                    <div class="projection-header"><span class="qb-name">${qb.players.name} (${qb.players.team})</span><span class="opponent">vs ${opponentName}</span></div>
                     <div class="projection-stats">
-                        <div class="stat-card">
-                            <div class="stat-value">${projection.totalProjectedFP.toFixed(1)}</div>
-                            <div class="stat-label">Projected Fantasy Points</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${projection.adjustedFPPerDB.toFixed(3)}</div>
-                            <div class="stat-label">Final FP per Dropback</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${projection.estimatedDropbacks}</div>
-                            <div class="stat-label">Projected Dropbacks</div>
-                        </div>
+                        <div class="stat-card"><div class="stat-value">${projection.totalProjectedFP.toFixed(1)}</div><div class="stat-label">Projected FP</div></div>
+                        <div class="stat-card"><div class="stat-value">${projection.adjustedFPPerDB.toFixed(3)}</div><div class="stat-label">Final FP/Dropback</div></div>
+                        <div class="stat-card"><div class="stat-value">${projection.estimatedDropbacks}</div><div class="stat-label">Projected Dropbacks</div></div>
                     </div>
-
                     ${coverageHTML}
-                    
-                    <div class="breakdown-section">
-                        <div class="breakdown-title">⚙️ Projection Modifiers</div>
+                    <div class="breakdown-section"><div class="breakdown-title">⚙️ Projection Modifiers</div>
                         <div class="breakdown-grid">
-                             <div class="breakdown-item">
-                                <div class="breakdown-value">${((projection.adjustmentBreakdown.spreadAdj - 1) * 100).toFixed(1)}%</div>
-                                <div class="breakdown-label">Spread Impact</div>
-                            </div>
-                            <div class="breakdown-item">
-                                <div class="breakdown-value">${((projection.adjustmentBreakdown.totalAdj - 1) * 100).toFixed(1)}%</div>
-                                <div class="breakdown-label">Game Total Impact</div>
-                            </div>
-                            <div class="breakdown-item">
-                                <div class="breakdown-value" style="color: ${projection.adjustmentBreakdown.defenseAdj >= 1 ? '#10b981' : '#ef4444'};">${((projection.adjustmentBreakdown.defenseAdj - 1) * 100).toFixed(1)}%</div>
-                                <div class="breakdown-label">Coverage Impact</div>
-                            </div>
+                             <div class="breakdown-item"><div class="breakdown-value">${((projection.adjustmentBreakdown.spreadAdj - 1) * 100).toFixed(1)}%</div><div class="breakdown-label">Spread Impact</div></div>
+                             <div class="breakdown-item"><div class="breakdown-value">${((projection.adjustmentBreakdown.totalAdj - 1) * 100).toFixed(1)}%</div><div class="breakdown-label">Total Impact</div></div>
+                             <div class="breakdown-item"><div class="breakdown-value" style="color: ${projection.adjustmentBreakdown.defenseAdj >= 1 ? '#10b981' : '#ef4444'};">${((projection.adjustmentBreakdown.defenseAdj - 1) * 100).toFixed(1)}%</div><div class="breakdown-label">Coverage Impact</div></div>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
-        function showStatus(message, type) {
-            const statusDiv = document.getElementById('status-message');
+        // --- AUDIT FUNCTIONALITY ---
+
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            showStatus('Parsing odds CSV...', 'loading', 'audit-status');
+            Papa.parse(file, {
+                header: true,
+                complete: (results) => {
+                    csvData = results.data.filter(row => row.home_team && row.away_team);
+                    console.log(`✅ Odds CSV loaded with ${csvData.length} games.`);
+                    showStatus(`✅ Odds CSV loaded: ${csvData.length} games found.`, 'success', 'audit-status');
+                    checkAuditButtonStatus();
+                },
+                error: (error) => {
+                    console.error('❌ Odds CSV parsing error:', error);
+                    showStatus('Error parsing Odds CSV file.', 'error', 'audit-status');
+                }
+            });
+        }
+        
+        function handleGameLogUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            showStatus('Parsing game log CSV...', 'loading', 'audit-status');
+             Papa.parse(file, {
+                header: true,
+                complete: (results) => {
+                    gameLogData = processGameLogData(results.data);
+                    const playerCount = Object.keys(gameLogData).length;
+                    console.log(`✅ Game Log CSV loaded for ${playerCount} players.`);
+                    showStatus(`✅ Game Log CSV loaded: ${playerCount} players found.`, 'success', 'audit-status');
+                    checkAuditButtonStatus();
+                },
+                error: (error) => {
+                    console.error('❌ Game Log CSV parsing error:', error);
+                    showStatus('Error parsing Game Log CSV file.', 'error', 'audit-status');
+                }
+            });
+        }
+
+        function processGameLogData(rawData) {
+            const processed = {};
+            rawData.forEach(row => {
+                if (!row.Player || !row.Team) return;
+                const playerName = row.Player.trim();
+                if (processed[playerName]) return;
+
+                const weeklyScores = [];
+                for (let week = 1; week <= 18; week++) {
+                    const score = parseFloat(row[week.toString()]);
+                    if (!isNaN(score)) {
+                        weeklyScores.push({ week: week, points: score });
+                    }
+                }
+                if (weeklyScores.length > 0) {
+                    processed[playerName] = { team: row.Team.trim(), weeklyScores: weeklyScores };
+                }
+            });
+            return processed;
+        }
+
+        function checkAuditButtonStatus() {
+            const auditBtn = document.getElementById('audit-btn');
+            auditBtn.disabled = !(csvData.length > 0 && Object.keys(gameLogData).length > 0 && qbData.length > 0);
+        }
+
+        const teamMapping = { 'Kansas City Chiefs': 'KC', 'Baltimore Ravens': 'BAL', 'Philadelphia Eagles': 'PHI', 'Green Bay Packers': 'GB', 'Buffalo Bills': 'BUF', 'Arizona Cardinals': 'ARI', 'Atlanta Falcons': 'ATL', 'Pittsburgh Steelers': 'PIT', 'New Orleans Saints': 'NO', 'Carolina Panthers': 'CAR', 'Chicago Bears': 'CHI', 'Tennessee Titans': 'TEN', 'Cincinnati Bengals': 'CIN', 'New England Patriots': 'NE', 'Indianapolis Colts': 'IND', 'Houston Texans': 'HOU', 'Miami Dolphins': 'MIA', 'Jacksonville Jaguars': 'JAX', 'New York Giants': 'NYG', 'Minnesota Vikings': 'MIN', 'Seattle Seahawks': 'SEA', 'Denver Broncos': 'DEN', 'Los Angeles Chargers': 'LAC', 'Las Vegas Raiders': 'LV', 'Cleveland Browns': 'CLE', 'Dallas Cowboys': 'DAL', 'Tampa Bay Buccaneers': 'TB', 'Washington Commanders': 'WAS', 'Los Angeles Rams': 'LAR', 'San Francisco 49ers': 'SF', 'Detroit Lions': 'DET', 'New York Jets': 'NYJ' };
+        function normalizeTeamName(teamName) { return teamMapping[teamName] || teamName; }
+
+        function getWeekFromDate(dateString) {
+            const gameDate = new Date(dateString);
+            const seasonStart = new Date('2024-09-04'); // Wednesday before first Thursday game
+            const daysDiff = Math.floor((gameDate - seasonStart) / (1000 * 60 * 60 * 24));
+            return Math.floor(daysDiff / 7) + 1;
+        }
+
+        function getActualFantasyPoints(playerName, week) {
+            const playerData = gameLogData[playerName];
+            if (!playerData) return null;
+            const weekData = playerData.weeklyScores.find(w => w.week === week);
+            return weekData ? weekData.points : null;
+        }
+
+        async function runSeasonAudit() {
+            if (csvData.length === 0 || Object.keys(gameLogData).length === 0) {
+                showStatus('Please upload both CSV files.', 'error', 'audit-status');
+                return;
+            }
+
+            const minGames = parseInt(document.getElementById('min-games').value) || 8;
+            document.getElementById('audit-progress').style.display = 'block';
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            
+            showStatus(`Starting audit for QBs with at least ${minGames} games...`, 'loading', 'audit-status');
+            
+            let auditResults = [];
+            const eligibleQBs = qbData; // All loaded QBs are potentially eligible
+
+            for (let i = 0; i < eligibleQBs.length; i++) {
+                const qb = eligibleQBs[i];
+                const progress = ((i + 1) / eligibleQBs.length) * 100;
+                progressFill.style.width = `${progress}%`;
+                progressText.textContent = `Processing ${qb.players.name} (${i + 1}/${eligibleQBs.length})`;
+
+                const qbGames = csvData.filter(game => {
+                    const homeTeam = normalizeTeamName(game.home_team);
+                    const awayTeam = normalizeTeamName(game.away_team);
+                    return homeTeam === qb.players.team || awayTeam === qb.players.team;
+                });
+                
+                let weeklyResults = [];
+                let totalSquaredError = 0;
+
+                for (const game of qbGames) {
+                    try {
+                        const homeTeam = normalizeTeamName(game.home_team);
+                        const awayTeam = normalizeTeamName(game.away_team);
+                        const isHome = homeTeam === qb.players.team;
+                        const opponent = isHome ? awayTeam : homeTeam;
+                        
+                        const opponentDefense = defenseData.find(def => def.team === opponent);
+                        const spread = isHome ? parseFloat(game.dk_spread_home) : parseFloat(game.dk_spread_away);
+                        const total = parseFloat(game.dk_total_point);
+                        const week = getWeekFromDate(game.commence_time);
+                        
+                        const gameContext = {
+                            spread: isNaN(spread) ? null : spread,
+                            total: isNaN(total) ? null : total
+                        };
+                        
+                        const projection = projector.calculateProjection(qb, gameContext, opponentDefense);
+                        if (!projection) continue;
+                        
+                        const actualFP = getActualFantasyPoints(qb.players.name, week);
+                        if (actualFP === null) continue;
+
+                        const error = actualFP - projection.totalProjectedFP;
+                        totalSquaredError += error * error;
+                        
+                        weeklyResults.push({
+                            week: week,
+                            opponent: opponent,
+                            projected: projection.totalProjectedFP,
+                            actual: actualFP,
+                            diff: error,
+                            matchupType: projection.matchupType,
+                            wasBoomWeek: actualFP >= 25,
+                            wasBustWeek: actualFP < 15,
+                        });
+
+                    } catch (e) { console.error(`Error processing game for ${qb.players.name}:`, e); }
+                }
+
+                if (weeklyResults.length >= minGames) {
+                    const mae = weeklyResults.reduce((sum, r) => sum + Math.abs(r.diff), 0) / weeklyResults.length;
+                    const rmse = Math.sqrt(totalSquaredError / weeklyResults.length);
+                    const totalProjected = weeklyResults.reduce((sum, r) => sum + r.projected, 0);
+                    const totalActual = weeklyResults.reduce((sum, r) => sum + r.actual, 0);
+
+                    const boomMatchups = weeklyResults.filter(r => r.matchupType === 'boom').length;
+                    const bustMatchups = weeklyResults.filter(r => r.matchupType === 'bust').length;
+                    const boomHits = weeklyResults.filter(r => r.matchupType === 'boom' && r.wasBoomWeek).length;
+                    const bustHits = weeklyResults.filter(r => r.matchupType === 'bust' && r.wasBustWeek).length;
+                    
+                    auditResults.push({
+                        name: qb.players.name,
+                        team: qb.players.team,
+                        gamesPlayed: weeklyResults.length,
+                        totalProjected, totalActual,
+                        mae, rmse,
+                        boomAccuracy: boomMatchups > 0 ? boomHits / boomMatchups : 0,
+                        bustAccuracy: bustMatchups > 0 ? bustHits / bustMatchups : 0,
+                        weeklyResults: weeklyResults.sort((a, b) => a.week - b.week)
+                    });
+                }
+                await new Promise(resolve => setTimeout(resolve, 5)); // Prevent UI freeze
+            }
+            
+            document.getElementById('audit-progress').style.display = 'none';
+            auditResults.sort((a, b) => b.totalProjected - a.totalProjected);
+            displayEnhancedAuditResults(auditResults);
+        }
+
+        function displayEnhancedAuditResults(results) {
+            const resultsDiv = document.getElementById('audit-results');
+            if (results.length === 0) {
+                resultsDiv.innerHTML = `<div class="loading">No quarterbacks met the minimum game criteria of ${document.getElementById('min-games').value}.</div>`;
+                return;
+            }
+
+            const avgMae = results.reduce((sum, qb) => sum + qb.mae, 0) / results.length;
+            const avgRmse = results.reduce((sum, qb) => sum + qb.rmse, 0) / results.length;
+            
+            let html = `<div class="audit-summary"><h2>📊 2024 Season Statistical Audit</h2>
+                <div class="breakdown-grid" style="margin-top: 20px;">
+                    <div class="breakdown-item"><div class="breakdown-value">${results.length}</div><div class="breakdown-label">QBs Analyzed</div></div>
+                    <div class="breakdown-item"><div class="breakdown-value">${avgMae.toFixed(2)}</div><div class="breakdown-label">Avg MAE</div></div>
+                    <div class="breakdown-item"><div class="breakdown-value">${avgRmse.toFixed(2)}</div><div class="breakdown-label">Avg RMSE</div></div>
+                </div></div>`;
+
+            results.forEach(qb => {
+                html += `<div class="player-audit-card">
+                    <div class="player-header">
+                      <div class="player-name">${qb.name} (${qb.team})</div>
+                      <div class="accuracy-score" style="background-color: #64748b;">${qb.gamesPlayed} Games</div>
+                    </div>
+                    <div class="breakdown-grid" style="margin-bottom: 15px;">
+                        <div class="breakdown-item"><div class="breakdown-value">${qb.totalProjected.toFixed(1)}</div><div class="breakdown-label">Total Projected</div></div>
+                        <div class="breakdown-item"><div class="breakdown-value">${qb.totalActual.toFixed(1)}</div><div class="breakdown-label">Total Actual</div></div>
+                        <div class="breakdown-item"><div class="breakdown-value" style="color:${(qb.totalActual - qb.totalProjected) > 0 ? '#10b981':'#ef4444'}">${(qb.totalActual - qb.totalProjected).toFixed(1)}</div><div class="breakdown-label">Total Diff</div></div>
+                        <div class="breakdown-item"><div class="breakdown-value">${qb.mae.toFixed(2)}</div><div class="breakdown-label">MAE</div></div>
+                    </div>
+                    <h4 style="margin-bottom: 10px;">Weekly Breakdown:</h4>
+                    <div class="weekly-breakdown">${qb.weeklyResults.map(week => {
+                        const diffColor = week.diff >= 0 ? '#10b981' : '#dc2626';
+                        let weekClass = 'week-item';
+                        if (week.matchupType === 'boom') weekClass += ' week-boom';
+                        if (week.matchupType === 'bust') weekClass += ' week-bust';
+                        
+                        return `<div class="${weekClass}">
+                                <div style="font-weight: 600;">Week ${week.week} vs ${week.opponent}</div>
+                                <div class="week-projected">P: ${week.projected.toFixed(1)}</div>
+                                <div class="week-actual">A: ${week.actual.toFixed(1)}</div>
+                                <div class="week-diff" style="color: ${diffColor};">${week.diff >= 0 ? '+' : ''}${week.diff.toFixed(1)}</div>
+                            </div>`;
+                    }).join('')}</div>
+                </div>`;
+            });
+            resultsDiv.innerHTML = html;
+            showStatus(`✅ Audit complete! Analyzed ${results.length} QBs.`, 'success', 'audit-status');
+        }
+
+        // --- UTILITY ---
+        function showStatus(message, type, elementId) {
+            const statusDiv = document.getElementById(elementId);
             if (!statusDiv) return;
-            statusDiv.className = `status-message ${type}`;
+            statusDiv.className = type; // Simple class for color
             statusDiv.textContent = message;
             statusDiv.style.display = 'block';
             
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 4000);
+            if (type !== 'error') {
+                setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
+            }
         }
+        
+        // --- Re-add functions that were previously removed for brevity ---
+        async function loadQBData() {
+            try {
+                console.log('📈 Loading QB data from player_summary...');
+                const { data, error } = await supabaseClient
+                    .from('player_summary')
+                    .select('*, players(name, team)')
+                    .not('players', 'is', null)
+                    .gt('weighted_fp_per_db', 0.1)
+                    .order('weighted_fp_per_db', { ascending: false })
+                    .limit(50);
+
+                if (error) throw error;
+                if (!data || data.length === 0) throw new Error('No quarterback summary data found');
+
+                qbData = data;
+                console.log(`✅ Loaded ${qbData.length} quarterbacks`);
+                populateQBSelect();
+                showStatus('Quarterback data loaded!', 'success', 'status-message');
+            } catch (error) {
+                console.error('❌ Error loading QB data:', error);
+                showStatus(`Failed to load QB data: ${error.message}`, 'error', 'status-message');
+                document.getElementById('qb-select').innerHTML = '<option value="">Failed to load QBs</option>';
+            }
+        }
+
+        async function loadDefenseData() {
+            try {
+                console.log('🛡️ Loading defense data...');
+                const { data, error } = await supabaseClient
+                    .from('opponent_defense_tendencies')
+                    .select('*')
+                    .order('team_name', { ascending: true });
+
+                if (error) throw error;
+                defenseData = data;
+                console.log(`✅ Loaded ${defenseData.length} team defenses`);
+                populateOpponentSelect();
+            } catch (error) {
+                console.error('❌ Error loading defense data:', error);
+                populateOpponentSelect(); // Populate with fallbacks even on error
+            }
+        }
+        
+        function populateQBSelect() {
+            const select = document.getElementById('qb-select');
+            select.innerHTML = '<option value="">Select a quarterback</option>';
+            qbData.forEach((qb) => {
+                if (!qb.players) return; // Safeguard for bad data
+                const option = document.createElement('option');
+                option.value = qb.player_id;
+                option.textContent = `${qb.players.name} (${qb.players.team}) - ${qb.weighted_fp_per_db.toFixed(3)} FP/DB`;
+                select.appendChild(option);
+            });
+        }
+        
+        function populateOpponentSelect() {
+             const select = document.getElementById('opponent-select');
+            select.innerHTML = '<option value="">Select opponent</option>';
+            const teams = defenseData.length > 0 ? defenseData : [
+                { team: 'ARI', team_name: 'Arizona Cardinals' }, { team: 'ATL', team_name: 'Atlanta Falcons' }, { team: 'BAL', team_name: 'Baltimore Ravens' }, { team: 'BUF', team_name: 'Buffalo Bills' }, { team: 'CAR', team_name: 'Carolina Panthers' }, { team: 'CHI', team_name: 'Chicago Bears' }, { team: 'CIN', team_name: 'Cincinnati Bengals' }, { team: 'CLE', team_name: 'Cleveland Browns' }, { team: 'DAL', team_name: 'Dallas Cowboys' }, { team: 'DEN', team_name: 'Denver Broncos' }, { team: 'DET', team_name: 'Detroit Lions' }, { team: 'GB', team_name: 'Green Bay Packers' }, { team: 'HOU', team_name: 'Houston Texans' }, { team: 'IND', team_name: 'Indianapolis Colts' }, { team: 'JAX', team_name: 'Jacksonville Jaguars' }, { team: 'KC', team_name: 'Kansas City Chiefs' }, { team: 'LV', team_name: 'Las Vegas Raiders' }, { team: 'LAC', team_name: 'Los Angeles Chargers' }, { team: 'LAR', team_name: 'Los Angeles Rams' }, { team: 'MIA', team_name: 'Miami Dolphins' }, { team: 'MIN', team_name: 'Minnesota Vikings' }, { team: 'NE', team_name: 'New England Patriots' }, { team: 'NO', team_name: 'New Orleans Saints' }, { team: 'NYG', team_name: 'New York Giants' }, { team: 'NYJ', team_name: 'New York Jets' }, { team: 'PHI', team_name: 'Philadelphia Eagles' }, { team: 'PIT', team_name: 'Pittsburgh Steelers' }, { team: 'SF', team_name: 'San Francisco 49ers' }, { team: 'SEA', team_name: 'Seattle Seahawks' }, { team: 'TB', team_name: 'Tampa Bay Buccaneers' }, { team: 'TEN', team_name: 'Tennessee Titans' }, { team: 'WAS', team_name: 'Washington Commanders' },
+            ];
+            
+            teams.sort((a,b) => (a.team_name || a.team).localeCompare(b.team_name || b.team)).forEach((team) => {
+                const option = document.createElement('option');
+                option.value = team.team;
+                option.textContent = `${team.team_name || team.team} (${team.team})`;
+                select.appendChild(option);
+            });
+        }
+
     </script>
 </body>
 </html>
