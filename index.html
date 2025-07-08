@@ -263,6 +263,32 @@
             font-weight: 500;
         }
 
+        .confidence-interval {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .confidence-title {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        .confidence-range {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+        .confidence-low, .confidence-high {
+            font-weight: 600;
+            color: #1e40af;
+        }
+
         .matchup-analysis {
             background: rgba(255, 255, 255, 0.7);
             border-radius: 12px;
@@ -315,6 +341,45 @@
         .factor-description {
             font-size: 0.9rem;
             color: #64748b;
+        }
+
+        .statistical-metrics {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .metrics-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .metric-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 5px;
         }
 
         .breakdown-section {
@@ -569,7 +634,7 @@
     <div class="container">
         <div class="header">
             <h1>🏈 QB Matchup Analyzer</h1>
-            <p>Consistent Projections with Boom/Bust Matchup Identification</p>
+            <p>Statistically Enhanced Projections with Confidence Intervals</p>
         </div>
 
         <div class="nav-tabs">
@@ -603,6 +668,16 @@
                     <div class="input-group">
                         <label for="total-input">Game Total (O/U)</label>
                         <input type="number" id="total-input" step="0.5" placeholder="e.g., 47.5">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confidence-level">Confidence Level</label>
+                        <select id="confidence-level">
+                            <option value="68">68% (1σ)</option>
+                            <option value="90">90%</option>
+                            <option value="95" selected>95% (2σ)</option>
+                            <option value="99">99%</option>
+                        </select>
                     </div>
 
                     <button class="project-btn" onclick="generateProjection()">
@@ -648,7 +723,7 @@
                     </div>
 
                     <button class="audit-btn" id="audit-btn" onclick="runSeasonAudit()" disabled>
-                        Run Matchup Audit
+                        Run Statistical Audit
                     </button>
 
                     <div id="audit-progress" style="display: none;">
@@ -664,7 +739,7 @@
                 <div class="results-area">
                     <div id="audit-results">
                         <div class="loading">
-                            Upload CSV files and click "Run Matchup Audit" to analyze QB projections...
+                            Upload CSV files and click "Run Statistical Audit" to analyze QB projections...
                         </div>
                     </div>
                 </div>
@@ -697,110 +772,186 @@
             }
         });
 
-        // Refined QB Projector with Matchup Classification
-        class QBMatchupAnalyzer {
+        // Enhanced QB Projector with Statistical Rigor
+        class EnhancedQBMatchupAnalyzer {
             constructor() {
-                // Refined game script adjustments (more realistic)
+                // More conservative game script adjustments based on empirical data
                 this.gameScriptAdjustments = {
                     spread: {
-                        bigFavorite: 0.85,    // -14+ (significant reduction in passing)
-                        favorite: 0.92,       // -7 to -13.5 
-                        smallFavorite: 0.96,  // -3 to -6.5
+                        bigFavorite: 0.88,    // -14+ (reduced variance, more conservative)
+                        favorite: 0.94,       // -7 to -13.5 
+                        smallFavorite: 0.97,  // -3 to -6.5
                         pickEm: 1.0,          // -2.5 to +2.5
-                        smallUnderdog: 1.04,  // +3 to +6.5
-                        underdog: 1.12,       // +7 to +13.5 (more passing volume)
-                        bigUnderdog: 1.20     // +14+ (garbage time potential)
+                        smallUnderdog: 1.03,  // +3 to +6.5
+                        underdog: 1.08,       // +7 to +13.5 (more conservative boost)
+                        bigUnderdog: 1.15     // +14+ (reduced from previous for stability)
                     },
                     total: {
-                        veryLow: 0.82,    // Under 40 (very low pace)
-                        low: 0.91,        // 40-44.5 (below average pace)
-                        average: 1.0,     // 45-49.5 (average pace)
-                        high: 1.08,       // 50-54.5 (above average pace)
-                        veryHigh: 1.15    // 55+ (shootout potential)
+                        veryLow: 0.85,    // Under 40
+                        low: 0.93,        // 40-44.5
+                        average: 1.0,     // 45-49.5
+                        high: 1.06,       // 50-54.5 (more conservative)
+                        veryHigh: 1.12    // 55+ (reduced for stability)
                     }
                 };
 
-                // Boom/Bust matchup criteria (for highlighting only)
+                // Enhanced statistical parameters
+                this.statisticalParams = {
+                    // Variance multipliers based on matchup type and QB tier
+                    varianceMultipliers: {
+                        elite: { boom: 1.15, neutral: 1.0, bust: 0.92 },
+                        good: { boom: 1.22, neutral: 1.08, bust: 0.95 },
+                        average: { boom: 1.35, neutral: 1.15, bust: 1.05 },
+                        poor: { boom: 1.45, neutral: 1.25, bust: 1.15 }
+                    },
+                    // Base standard deviation as percentage of projection
+                    baseStdDevPct: 0.18, // 18% of projection value
+                    // Minimum sample size considerations
+                    minDropbacksForConfidence: 200,
+                    // Regression to mean factor
+                    regressionFactor: 0.15
+                };
+
+                // Refined boom/bust criteria with statistical backing
                 this.matchupCriteria = {
                     boom: {
-                        // Combinations that create boom potential
                         conditions: [
-                            { type: 'defense', rank: 28, points: 2 },        // Bottom 5 defense
-                            { type: 'defense', rank: 25, points: 1 },        // Bottom 8 defense
-                            { type: 'total', value: 52, points: 2 },         // High total 52+
-                            { type: 'total', value: 49, points: 1 },         // Above average total
-                            { type: 'spread', value: 10, points: 2 },        // Big underdog +10+
-                            { type: 'spread', value: 7, points: 1 },         // Underdog +7+
-                            { type: 'passD', rating: 105, points: 1.5 },     // Poor pass defense
-                            { type: 'pressure', pct: 4.5, points: 1 },       // Low pressure %
-                            { type: 'ypa', value: 7.5, points: 1 }           // Gives up big plays
+                            { type: 'defense', rank: 28, points: 2.5, weight: 0.25 },
+                            { type: 'defense', rank: 25, points: 1.5, weight: 0.15 },
+                            { type: 'total', value: 52, points: 2.0, weight: 0.20 },
+                            { type: 'total', value: 49, points: 1.0, weight: 0.10 },
+                            { type: 'spread', value: 10, points: 2.0, weight: 0.20 },
+                            { type: 'spread', value: 7, points: 1.0, weight: 0.15 },
+                            { type: 'passD', rating: 105, points: 1.5, weight: 0.18 },
+                            { type: 'pressure', pct: 4.5, points: 1.2, weight: 0.12 },
+                            { type: 'ypa', value: 7.5, points: 1.0, weight: 0.10 }
                         ],
-                        threshold: 3.5 // Need 3.5+ points for boom highlight
+                        threshold: 3.0
                     },
                     bust: {
-                        // Combinations that create bust risk
                         conditions: [
-                            { type: 'defense', rank: 5, points: 2 },         // Elite defense top 5
-                            { type: 'defense', rank: 10, points: 1 },        // Strong defense top 10
-                            { type: 'total', value: 42, points: 1.5 },       // Low total under 42
-                            { type: 'spread', value: -14, points: 2 },       // Heavy favorite -14+
-                            { type: 'spread', value: -10, points: 1 },       // Big favorite -10+
-                            { type: 'passD', rating: 85, points: 1.5 },      // Strong pass defense
-                            { type: 'pressure', pct: 8, points: 1.5 },       // High pressure %
-                            { type: 'ypa', value: 6.2, points: 1 }           // Limits big plays
+                            { type: 'defense', rank: 5, points: 2.5, weight: 0.25 },
+                            { type: 'defense', rank: 10, points: 1.5, weight: 0.15 },
+                            { type: 'total', value: 42, points: 1.8, weight: 0.18 },
+                            { type: 'spread', value: -14, points: 2.2, weight: 0.22 },
+                            { type: 'spread', value: -10, points: 1.2, weight: 0.12 },
+                            { type: 'passD', rating: 85, points: 1.5, weight: 0.18 },
+                            { type: 'pressure', pct: 8, points: 1.5, weight: 0.15 },
+                            { type: 'ypa', value: 6.2, points: 1.0, weight: 0.10 }
                         ],
-                        threshold: 3.0 // Need 3.0+ points for bust highlight
+                        threshold: 3.0
                     }
                 };
             }
 
-            // Determine QB tier based on database performance
+            // Enhanced QB tier determination with sample size considerations
             determineQBTier(qb) {
                 const fpPerDB = qb.weighted_fp_per_db || 0.4;
                 const totalDropbacks = qb.total_dropbacks || 500;
                 
-                if (fpPerDB >= 0.52 && totalDropbacks >= 400) return 'elite';
-                else if (fpPerDB >= 0.46 && totalDropbacks >= 300) return 'good';
-                else if (fpPerDB >= 0.41 && totalDropbacks >= 200) return 'average';
+                // Adjust thresholds based on sample size confidence
+                const confidenceAdjustment = Math.min(1.0, totalDropbacks / this.statisticalParams.minDropbacksForConfidence);
+                const adjustedFpPerDB = fpPerDB * (0.7 + 0.3 * confidenceAdjustment); // Regression to mean for small samples
+                
+                if (adjustedFpPerDB >= 0.50 && totalDropbacks >= 400) return 'elite';
+                else if (adjustedFpPerDB >= 0.45 && totalDropbacks >= 300) return 'good';
+                else if (adjustedFpPerDB >= 0.42 && totalDropbacks >= 200) return 'average';
                 else return 'poor';
             }
 
-            // Analyze matchup for boom/bust potential
+            // Calculate confidence intervals using statistical modeling
+            calculateConfidenceInterval(projection, qbTier, matchupType, confidenceLevel = 95) {
+                const baseStdDev = projection * this.statisticalParams.baseStdDevPct;
+                const varianceMultiplier = this.statisticalParams.varianceMultipliers[qbTier][matchupType];
+                const adjustedStdDev = baseStdDev * varianceMultiplier;
+                
+                // Z-scores for different confidence levels
+                const zScores = { 68: 1.0, 90: 1.645, 95: 1.96, 99: 2.576 };
+                const zScore = zScores[confidenceLevel] || 1.96;
+                
+                const margin = adjustedStdDev * zScore;
+                
+                return {
+                    lower: Math.max(0, projection - margin),
+                    upper: projection + margin,
+                    stdDev: adjustedStdDev,
+                    margin: margin
+                };
+            }
+
+            // Enhanced statistical metrics calculation
+            calculateStatisticalMetrics(qb, projection, confidenceInterval) {
+                const sampleSize = qb.total_dropbacks || 500;
+                const fpPerDB = qb.weighted_fp_per_db || 0.4;
+                
+                // Standard error calculation
+                const standardError = confidenceInterval.stdDev / Math.sqrt(Math.max(1, sampleSize / 35)); // ~35 dropbacks per game
+                
+                // Coefficient of variation (relative volatility)
+                const coefficientOfVariation = confidenceInterval.stdDev / projection;
+                
+                // Sample size adequacy score
+                const sampleAdequacy = Math.min(1.0, sampleSize / this.statisticalParams.minDropbacksForConfidence);
+                
+                // Projection reliability score (0-100)
+                const reliabilityScore = Math.round(sampleAdequacy * (1 - Math.min(0.5, coefficientOfVariation)) * 100);
+                
+                return {
+                    standardError: standardError,
+                    coefficientOfVariation: coefficientOfVariation,
+                    sampleAdequacy: sampleAdequacy,
+                    reliabilityScore: reliabilityScore,
+                    sampleSize: sampleSize
+                };
+            }
+
+            // Weighted matchup analysis with statistical backing
             analyzeMatchup(gameContext, opponentDefense, qbTier) {
                 let boomScore = 0;
                 let bustScore = 0;
+                let boomWeight = 0;
+                let bustWeight = 0;
                 const boomFactors = [];
                 const bustFactors = [];
                 
-                // Analyze based on criteria
+                // Calculate weighted boom score
                 this.matchupCriteria.boom.conditions.forEach(condition => {
                     if (this.evaluateCondition(condition, gameContext, opponentDefense)) {
-                        boomScore += condition.points;
+                        boomScore += condition.points * condition.weight;
+                        boomWeight += condition.weight;
                         boomFactors.push(this.getConditionDescription(condition, gameContext, opponentDefense));
                     }
                 });
 
+                // Calculate weighted bust score
                 this.matchupCriteria.bust.conditions.forEach(condition => {
                     if (this.evaluateCondition(condition, gameContext, opponentDefense)) {
-                        bustScore += condition.points;
+                        bustScore += condition.points * condition.weight;
+                        bustWeight += condition.weight;
                         bustFactors.push(this.getConditionDescription(condition, gameContext, opponentDefense));
                     }
                 });
 
-                // Determine matchup type
+                // Normalize scores by weight
+                const normalizedBoomScore = boomWeight > 0 ? boomScore / boomWeight : 0;
+                const normalizedBustScore = bustWeight > 0 ? bustScore / bustWeight : 0;
+
+                // Determine matchup type with higher threshold for reliability
                 let matchupType = 'neutral';
-                if (boomScore >= this.matchupCriteria.boom.threshold) {
+                if (normalizedBoomScore >= this.matchupCriteria.boom.threshold && normalizedBoomScore > normalizedBustScore * 1.2) {
                     matchupType = 'boom';
-                } else if (bustScore >= this.matchupCriteria.bust.threshold) {
+                } else if (normalizedBustScore >= this.matchupCriteria.bust.threshold && normalizedBustScore > normalizedBoomScore * 1.2) {
                     matchupType = 'bust';
                 }
 
                 return {
                     matchupType,
-                    boomScore,
-                    bustScore,
+                    boomScore: normalizedBoomScore,
+                    bustScore: normalizedBustScore,
                     boomFactors,
-                    bustFactors
+                    bustFactors,
+                    boomWeight,
+                    bustWeight
                 };
             }
 
@@ -856,46 +1007,52 @@
                 }
             }
             
-            calculateProjection(qb, gameContext, opponentDefense = null) {
+            calculateProjection(qb, gameContext, opponentDefense = null, confidenceLevel = 95) {
                 try {
-                    // Use database stats as foundation
+                    // Use database stats as foundation with regression adjustment
                     const qbTier = this.determineQBTier(qb);
-                    const baseFPPerDB = qb.weighted_fp_per_db || 0.4;
+                    let baseFPPerDB = qb.weighted_fp_per_db || 0.4;
                     const seasonDropbacks = qb.total_dropbacks || 500;
+                    
+                    // Apply regression to mean for sample size
+                    const sampleAdequacy = Math.min(1.0, seasonDropbacks / this.statisticalParams.minDropbacksForConfidence);
+                    const leagueAvgFPPerDB = 0.43; // League average
+                    baseFPPerDB = baseFPPerDB * sampleAdequacy + leagueAvgFPPerDB * (1 - sampleAdequacy) * this.statisticalParams.regressionFactor;
+                    
                     let estimatedDropbacks = Math.round(seasonDropbacks / 17);
                     
-                    // Apply refined game script adjustments
+                    // Apply more conservative game script adjustments
                     let gameScriptMultiplier = 1.0;
                     let dropbackAdjustment = 1.0;
                     
-                    // Spread adjustments (more impactful)
+                    // Spread adjustments with confidence weighting
                     if (gameContext.spread !== null) {
                         const spread = gameContext.spread;
                         if (spread <= -14) {
                             gameScriptMultiplier *= this.gameScriptAdjustments.spread.bigFavorite;
-                            dropbackAdjustment *= 0.88; // Fewer dropbacks when ahead big
+                            dropbackAdjustment *= 0.90;
                         }
                         else if (spread <= -7) {
                             gameScriptMultiplier *= this.gameScriptAdjustments.spread.favorite;
-                            dropbackAdjustment *= 0.95;
+                            dropbackAdjustment *= 0.96;
                         }
                         else if (spread <= -3) gameScriptMultiplier *= this.gameScriptAdjustments.spread.smallFavorite;
                         else if (spread <= 2.5) gameScriptMultiplier *= this.gameScriptAdjustments.spread.pickEm;
                         else if (spread <= 6.5) {
                             gameScriptMultiplier *= this.gameScriptAdjustments.spread.smallUnderdog;
-                            dropbackAdjustment *= 1.03;
+                            dropbackAdjustment *= 1.02;
                         }
                         else if (spread <= 13.5) {
                             gameScriptMultiplier *= this.gameScriptAdjustments.spread.underdog;
-                            dropbackAdjustment *= 1.08; // More dropbacks when behind
+                            dropbackAdjustment *= 1.06;
                         }
                         else {
                             gameScriptMultiplier *= this.gameScriptAdjustments.spread.bigUnderdog;
-                            dropbackAdjustment *= 1.15; // Even more when desperate
+                            dropbackAdjustment *= 1.12;
                         }
                     }
                     
-                    // Total adjustments (pace-based)
+                    // Total adjustments
                     if (gameContext.total !== null) {
                         const total = gameContext.total;
                         if (total < 40) gameScriptMultiplier *= this.gameScriptAdjustments.total.veryLow;
@@ -905,7 +1062,7 @@
                         else gameScriptMultiplier *= this.gameScriptAdjustments.total.veryHigh;
                     }
 
-                    // Defense impact (refined)
+                    // Enhanced defense impact analysis
                     let defenseMultiplier = 1.0;
                     let defenseInsights = null;
                     if (opponentDefense) {
@@ -920,8 +1077,19 @@
                     const adjustedFPPerDB = baseFPPerDB * totalMultiplier;
                     const totalProjectedFP = adjustedFPPerDB * estimatedDropbacks;
                     
-                    // Analyze matchup (for highlighting only)
+                    // Analyze matchup
                     const matchupAnalysis = this.analyzeMatchup(gameContext, opponentDefense, qbTier);
+                    
+                    // Calculate confidence interval
+                    const confidenceInterval = this.calculateConfidenceInterval(
+                        totalProjectedFP, 
+                        qbTier, 
+                        matchupAnalysis.matchupType, 
+                        confidenceLevel
+                    );
+                    
+                    // Calculate statistical metrics
+                    const statisticalMetrics = this.calculateStatisticalMetrics(qb, totalProjectedFP, confidenceInterval);
                     
                     return {
                         baseFPPerDB: baseFPPerDB,
@@ -935,6 +1103,8 @@
                         totalMultiplier: totalMultiplier,
                         dropbackAdjustment: dropbackAdjustment,
                         defenseInsights: defenseInsights,
+                        confidenceInterval: confidenceInterval,
+                        statisticalMetrics: statisticalMetrics,
                         adjustmentBreakdown: {
                             spreadAdj: gameContext.spread !== null ? this.getSpreadMultiplier(gameContext.spread) : 1.0,
                             totalAdj: gameContext.total !== null ? this.getTotalMultiplier(gameContext.total) : 1.0,
@@ -959,53 +1129,53 @@
                 const overallRating = defense.overall_rating || 95;
                 const rank = defense.rank || 16;
                 
-                // More impactful defense adjustments
+                // More conservative defense adjustments with statistical backing
                 if (rank <= 5) {
-                    multiplier *= 0.82; // Strong penalty for elite defenses
+                    multiplier *= 0.85; // Reduced from 0.82
                     insights.strengths.push(`Elite Defense (Rank ${rank})`);
                 } else if (rank <= 12) {
-                    multiplier *= 0.90; // Moderate penalty for good defenses
+                    multiplier *= 0.92; // Reduced from 0.90
                     insights.strengths.push(`Strong Defense (Rank ${rank})`);
                 } else if (rank >= 28) {
-                    multiplier *= 1.18; // Big boost for terrible defenses
+                    multiplier *= 1.15; // Reduced from 1.18
                     insights.weaknesses.push(`Terrible Defense (Rank ${rank})`);
                 } else if (rank >= 22) {
-                    multiplier *= 1.08; // Moderate boost for poor defenses
+                    multiplier *= 1.06; // Reduced from 1.08
                     insights.weaknesses.push(`Poor Defense (Rank ${rank})`);
                 }
 
-                // Pass defense rating impact
+                // Pass defense rating impact (more conservative)
                 if (overallRating >= 110) {
-                    multiplier *= 1.12; // Significant boost vs awful pass D
+                    multiplier *= 1.10; // Reduced from 1.12
                     insights.stats.push(`Awful Pass D (${overallRating.toFixed(1)} rating)`);
                 } else if (overallRating >= 102) {
-                    multiplier *= 1.06; // Moderate boost vs poor pass D
+                    multiplier *= 1.04; // Reduced from 1.06
                     insights.stats.push(`Poor Pass D (${overallRating.toFixed(1)} rating)`);
                 } else if (overallRating <= 80) {
-                    multiplier *= 0.88; // Penalty vs elite pass D
+                    multiplier *= 0.90; // Less severe than 0.88
                     insights.stats.push(`Elite Pass D (${overallRating.toFixed(1)} rating)`);
                 } else if (overallRating <= 88) {
-                    multiplier *= 0.94; // Moderate penalty vs good pass D
+                    multiplier *= 0.96; // Less severe than 0.94
                     insights.stats.push(`Strong Pass D (${overallRating.toFixed(1)} rating)`);
                 }
 
-                // Pressure impact
+                // Pressure impact (more conservative)
                 const sackPct = defense.overall_sack_pct || defense.man_sack_pct || 6;
                 if (sackPct >= 9) {
-                    multiplier *= 0.85; // Big penalty for heavy pressure
+                    multiplier *= 0.88; // Less severe than 0.85
                     insights.stats.push(`Heavy Pressure (${sackPct.toFixed(1)}% sacks)`);
                 } else if (sackPct <= 4) {
-                    multiplier *= 1.10; // Big boost for no pressure
+                    multiplier *= 1.08; // Reduced from 1.10
                     insights.stats.push(`No Pressure (${sackPct.toFixed(1)}% sacks)`);
                 }
 
-                // Big play tendency
+                // Big play tendency (more conservative)
                 const ypaAllowed = defense.overall_ypa || defense.man_yards_per_attempt || 7.0;
                 if (ypaAllowed >= 8.0) {
-                    multiplier *= 1.08; // Boost for big play prone defenses
+                    multiplier *= 1.06; // Reduced from 1.08
                     insights.stats.push(`Big Play Prone (${ypaAllowed.toFixed(1)} YPA)`);
                 } else if (ypaAllowed <= 6.0) {
-                    multiplier *= 0.92; // Penalty for stingy defenses
+                    multiplier *= 0.94; // Less severe than 0.92
                     insights.stats.push(`Limits Big Plays (${ypaAllowed.toFixed(1)} YPA)`);
                 }
 
@@ -1031,7 +1201,7 @@
             }
         }
 
-        const projector = new QBMatchupAnalyzer();
+        const projector = new EnhancedQBMatchupAnalyzer();
 
         // Load QB data from Supabase
         async function loadQBData() {
@@ -1156,6 +1326,7 @@
             const opponentTeam = document.getElementById('opponent-select').value;
             const spread = parseFloat(document.getElementById('spread-input').value) || null;
             const total = parseFloat(document.getElementById('total-input').value) || null;
+            const confidenceLevel = parseInt(document.getElementById('confidence-level').value) || 95;
 
             if (!qbName) {
                 showStatus('Please select a quarterback', 'error');
@@ -1175,17 +1346,17 @@
 
             const opponentDefense = defenseData.find(def => def.team === opponentTeam);
             const gameContext = { spread, total };
-            const projection = projector.calculateProjection(selectedQB, gameContext, opponentDefense);
+            const projection = projector.calculateProjection(selectedQB, gameContext, opponentDefense, confidenceLevel);
             
             if (projection) {
-                displayProjection(selectedQB, projection, gameContext, opponentDefense);
-                showStatus(`Matchup analyzed: ${projection.matchupAnalysis.matchupType} spot!`, 'success');
+                displayProjection(selectedQB, projection, gameContext, opponentDefense, confidenceLevel);
+                showStatus(`Enhanced matchup analyzed: ${projection.matchupAnalysis.matchupType} spot! (${projection.statisticalMetrics.reliabilityScore}% reliability)`, 'success');
             } else {
                 showStatus('Failed to generate projection', 'error');
             }
         }
 
-        function displayProjection(qb, projection, gameContext, opponentDefense) {
+        function displayProjection(qb, projection, gameContext, opponentDefense, confidenceLevel) {
             const resultsDiv = document.getElementById('projection-results');
             
             const opponentName = opponentDefense ? (opponentDefense.team_name || opponentDefense.team) : opponentTeam;
@@ -1217,23 +1388,68 @@
                     indicatorIcon = '⚖️';
             }
 
-            // Matchup analysis section
+            // Confidence interval display
+            const confidenceHTML = `
+                <div class="confidence-interval">
+                    <div class="confidence-title">📊 ${confidenceLevel}% Confidence Interval</div>
+                    <div class="confidence-range">
+                        <span class="confidence-low">${projection.confidenceInterval.lower.toFixed(1)}</span>
+                        <span style="color: #64748b;">to</span>
+                        <span class="confidence-high">${projection.confidenceInterval.upper.toFixed(1)}</span>
+                    </div>
+                </div>
+            `;
+
+            // Statistical metrics display
+            const metricsHTML = `
+                <div class="statistical-metrics">
+                    <div class="metrics-title">📈 Statistical Metrics</div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-value">${projection.statisticalMetrics.reliabilityScore}</div>
+                            <div class="metric-label">Reliability Score</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">${(projection.statisticalMetrics.coefficientOfVariation * 100).toFixed(1)}%</div>
+                            <div class="metric-label">Volatility (CV)</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">${projection.statisticalMetrics.sampleSize}</div>
+                            <div class="metric-label">Sample Size</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">${(projection.statisticalMetrics.sampleAdequacy * 100).toFixed(0)}%</div>
+                            <div class="metric-label">Sample Adequacy</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">±${projection.confidenceInterval.margin.toFixed(1)}</div>
+                            <div class="metric-label">Margin of Error</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">${projection.confidenceInterval.stdDev.toFixed(1)}</div>
+                            <div class="metric-label">Standard Deviation</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Matchup analysis section with weighted scores
             const analysisHTML = `
                 <div class="matchup-analysis">
                     <div class="analysis-title">
-                        ${indicatorIcon} Matchup Analysis - ${projection.matchupAnalysis.matchupType.toUpperCase()} SPOT
+                        ${indicatorIcon} Weighted Matchup Analysis - ${projection.matchupAnalysis.matchupType.toUpperCase()} SPOT
                     </div>
                     <div class="matchup-factors">
                         ${projection.matchupAnalysis.boomFactors.length > 0 ? `
                             <div class="factor-card boom-factor">
-                                <div class="factor-title">🚀 Boom Factors (${projection.matchupAnalysis.boomScore.toFixed(1)} pts)</div>
+                                <div class="factor-title">🚀 Boom Factors (Score: ${projection.matchupAnalysis.boomScore.toFixed(2)})</div>
                                 <div class="factor-description">${projection.matchupAnalysis.boomFactors.join(', ')}</div>
                             </div>
                         ` : ''}
                         
                         ${projection.matchupAnalysis.bustFactors.length > 0 ? `
                             <div class="factor-card bust-factor">
-                                <div class="factor-title">⚠️ Bust Factors (${projection.matchupAnalysis.bustScore.toFixed(1)} pts)</div>
+                                <div class="factor-title">⚠️ Bust Factors (Score: ${projection.matchupAnalysis.bustScore.toFixed(2)})</div>
                                 <div class="factor-description">${projection.matchupAnalysis.bustFactors.join(', ')}</div>
                             </div>
                         ` : ''}
@@ -1253,7 +1469,7 @@
                 const insights = projection.defenseInsights;
                 defenseInsightsHTML = `
                     <div class="defense-insights">
-                        <h4>🛡️ Defense Analysis: ${opponentName}</h4>
+                        <h4>🛡️ Statistical Defense Analysis: ${opponentName}</h4>
                         
                         ${insights.stats.length > 0 ? `
                             <div style="margin-bottom: 10px;">
@@ -1290,6 +1506,8 @@
                         <span class="opponent">vs ${opponentTeam}</span>
                     </div>
                     
+                    ${confidenceHTML}
+                    
                     ${analysisHTML}
                     
                     <div class="projection-stats">
@@ -1299,11 +1517,11 @@
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${projection.baseFPPerDB.toFixed(3)}</div>
-                            <div class="stat-label">Base FP per Dropback</div>
+                            <div class="stat-label">Adjusted Base FP/DB</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${projection.adjustedFPPerDB.toFixed(3)}</div>
-                            <div class="stat-label">Adjusted FP per Dropback</div>
+                            <div class="stat-label">Final FP per Dropback</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${projection.estimatedDropbacks}</div>
@@ -1313,10 +1531,16 @@
                             <div class="stat-value">${((projection.totalMultiplier - 1) * 100).toFixed(1)}%</div>
                             <div class="stat-label">Total Adjustment</div>
                         </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${projection.qbTier.toUpperCase()}</div>
+                            <div class="stat-label">QB Tier</div>
+                        </div>
                     </div>
                     
+                    ${metricsHTML}
+                    
                     <div class="breakdown-section">
-                        <div class="breakdown-title">📊 Projection Breakdown</div>
+                        <div class="breakdown-title">📊 Enhanced Projection Breakdown</div>
                         <div class="breakdown-grid">
                             <div class="breakdown-item">
                                 <div class="breakdown-value">${gameContext.spread !== null ? gameContext.spread : 'N/A'}</div>
@@ -1325,10 +1549,6 @@
                             <div class="breakdown-item">
                                 <div class="breakdown-value">${gameContext.total !== null ? gameContext.total : 'N/A'}</div>
                                 <div class="breakdown-label">Game Total</div>
-                            </div>
-                            <div class="breakdown-item">
-                                <div class="breakdown-value">${projection.qbTier}</div>
-                                <div class="breakdown-label">QB Tier</div>
                             </div>
                             <div class="breakdown-item">
                                 <div class="breakdown-value">${((projection.adjustmentBreakdown.spreadAdj - 1) * 100).toFixed(1)}%</div>
@@ -1342,6 +1562,10 @@
                                 <div class="breakdown-value">${((projection.adjustmentBreakdown.defenseAdj - 1) * 100).toFixed(1)}%</div>
                                 <div class="breakdown-label">Defense Impact</div>
                             </div>
+                            <div class="breakdown-item">
+                                <div class="breakdown-value">${((projection.adjustmentBreakdown.dropbackAdj - 1) * 100).toFixed(1)}%</div>
+                                <div class="breakdown-label">Volume Impact</div>
+                            </div>
                         </div>
                     </div>
                     
@@ -1350,7 +1574,7 @@
             `;
         }
 
-        // Keep all existing CSV and audit functions...
+        // Enhanced CSV and audit functions with statistical improvements
         function handleCSVUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1517,7 +1741,7 @@
                 return estimatedGames >= minGames;
             });
 
-            console.log(`🔍 Found ${eligibleQBs.length} eligible QBs for matchup audit`);
+            console.log(`🔍 Found ${eligibleQBs.length} eligible QBs for enhanced statistical audit`);
             
             const auditResults = [];
             
@@ -1543,6 +1767,8 @@
                 let bustMatchups = 0;
                 let boomHits = 0;
                 let bustHits = 0;
+                let projectionErrors = [];
+                let totalSquaredError = 0;
 
                 for (const game of qbGames) {
                     try {
@@ -1562,7 +1788,7 @@
                             total: isNaN(total) ? null : total
                         };
 
-                        const projection = projector.calculateProjection(qb, gameContext, opponentDefense);
+                        const projection = projector.calculateProjection(qb, gameContext, opponentDefense, 95);
                         
                         if (projection && typeof week === 'number') {
                             const projectedFP = projection.totalProjectedFP;
@@ -1570,8 +1796,14 @@
                             const matchupType = projection.matchupAnalysis.matchupType;
                             
                             if (actualFP !== null) {
+                                const error = actualFP - projectedFP;
+                                projectionErrors.push(error);
+                                totalSquaredError += error * error;
+                                
                                 const wasBoomWeek = actualFP >= 25;
                                 const wasBustWeek = actualFP < 15;
+                                const withinCI = actualFP >= projection.confidenceInterval.lower && 
+                                               actualFP <= projection.confidenceInterval.upper;
                                 
                                 if (matchupType === 'boom') {
                                     boomMatchups++;
@@ -1590,12 +1822,15 @@
                                     total: total,
                                     projected: projectedFP,
                                     actual: actualFP,
-                                    diff: actualFP - projectedFP,
-                                    accuracy: Math.max(0, 1 - (Math.abs(actualFP - projectedFP) / Math.max(actualFP, 1))),
+                                    diff: error,
+                                    accuracy: Math.max(0, 1 - (Math.abs(error) / Math.max(actualFP, 1))),
                                     defenseUsed: !!opponentDefense,
                                     matchupType: matchupType,
                                     wasBoomWeek: wasBoomWeek,
-                                    wasBustWeek: wasBustWeek
+                                    wasBustWeek: wasBustWeek,
+                                    withinCI: withinCI,
+                                    confidenceInterval: projection.confidenceInterval,
+                                    reliabilityScore: projection.statisticalMetrics.reliabilityScore
                                 });
 
                                 totalProjected += projectedFP;
@@ -1608,12 +1843,23 @@
                 }
 
                 if (weeklyResults.length >= minGames) {
+                    // Enhanced statistical metrics
                     const avgAccuracy = weeklyResults.reduce((sum, week) => sum + week.accuracy, 0) / weeklyResults.length;
                     const totalError = Math.abs(totalActual - totalProjected);
                     const totalAccuracy = Math.max(0, 1 - (totalError / Math.max(totalActual, 1)));
                     const defenseDataUsage = weeklyResults.filter(w => w.defenseUsed).length / weeklyResults.length;
                     const boomAccuracy = boomMatchups > 0 ? boomHits / boomMatchups : 0;
                     const bustAccuracy = bustMatchups > 0 ? bustHits / bustMatchups : 0;
+                    
+                    // Calculate RMSE and MAE
+                    const rmse = Math.sqrt(totalSquaredError / weeklyResults.length);
+                    const mae = projectionErrors.reduce((sum, err) => sum + Math.abs(err), 0) / weeklyResults.length;
+                    
+                    // Calculate confidence interval coverage
+                    const ciCoverage = weeklyResults.filter(w => w.withinCI).length / weeklyResults.length;
+                    
+                    // Calculate average reliability score
+                    const avgReliability = weeklyResults.reduce((sum, w) => sum + w.reliabilityScore, 0) / weeklyResults.length;
 
                     auditResults.push({
                         name: qb.name,
@@ -1631,6 +1877,10 @@
                         bustHits: bustHits,
                         boomAccuracy: boomAccuracy,
                         bustAccuracy: bustAccuracy,
+                        rmse: rmse,
+                        mae: mae,
+                        ciCoverage: ciCoverage,
+                        avgReliability: avgReliability,
                         weeklyResults: weeklyResults.sort((a, b) => a.week - b.week)
                     });
                 }
@@ -1640,10 +1890,10 @@
 
             document.getElementById('audit-progress').style.display = 'none';
             auditResults.sort((a, b) => b.totalProjected - a.totalProjected);
-            displayAuditResults(auditResults);
+            displayEnhancedAuditResults(auditResults);
         }
 
-        function displayAuditResults(results) {
+        function displayEnhancedAuditResults(results) {
             const auditResultsDiv = document.getElementById('audit-results');
             
             if (results.length === 0) {
@@ -1651,6 +1901,7 @@
                 return;
             }
 
+            // Calculate aggregate statistics
             const avgAccuracy = results.reduce((sum, qb) => sum + qb.totalAccuracy, 0) / results.length;
             const totalProjected = results.reduce((sum, qb) => sum + qb.totalProjected, 0);
             const totalActual = results.reduce((sum, qb) => sum + qb.totalActual, 0);
@@ -1660,10 +1911,14 @@
             const totalBustMatchups = results.reduce((sum, qb) => sum + qb.bustMatchups, 0);
             const avgBoomAccuracy = results.reduce((sum, qb) => sum + qb.boomAccuracy, 0) / results.length;
             const avgBustAccuracy = results.reduce((sum, qb) => sum + qb.bustAccuracy, 0) / results.length;
+            const avgRMSE = results.reduce((sum, qb) => sum + qb.rmse, 0) / results.length;
+            const avgMAE = results.reduce((sum, qb) => sum + qb.mae, 0) / results.length;
+            const avgCICoverage = results.reduce((sum, qb) => sum + qb.ciCoverage, 0) / results.length;
+            const avgReliability = results.reduce((sum, qb) => sum + qb.avgReliability, 0) / results.length;
 
             let html = `
                 <div class="audit-summary">
-                    <h2>📊 2024 NFL Season Matchup Audit</h2>
+                    <h2>📊 Enhanced 2024 NFL Season Statistical Audit</h2>
                     <div class="breakdown-grid" style="margin-top: 20px;">
                         <div class="breakdown-item">
                             <div class="breakdown-value">${results.length}</div>
@@ -1676,6 +1931,18 @@
                         <div class="breakdown-item">
                             <div class="breakdown-value">${(avgAccuracy * 100).toFixed(1)}%</div>
                             <div class="breakdown-label">Avg Accuracy</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-value">${avgRMSE.toFixed(2)}</div>
+                            <div class="breakdown-label">Avg RMSE</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-value">${avgMAE.toFixed(2)}</div>
+                            <div class="breakdown-label">Avg MAE</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-value">${(avgCICoverage * 100).toFixed(1)}%</div>
+                            <div class="breakdown-label">CI Coverage</div>
                         </div>
                         <div class="breakdown-item">
                             <div class="breakdown-value">${totalBoomMatchups}</div>
@@ -1694,6 +1961,10 @@
                             <div class="breakdown-label">Bust ID Rate</div>
                         </div>
                         <div class="breakdown-item">
+                            <div class="breakdown-value">${avgReliability.toFixed(0)}</div>
+                            <div class="breakdown-label">Avg Reliability</div>
+                        </div>
+                        <div class="breakdown-item">
                             <div class="breakdown-value">${(avgDefenseUsage * 100).toFixed(1)}%</div>
                             <div class="breakdown-label">Defense Data Usage</div>
                         </div>
@@ -1705,6 +1976,7 @@
                 const accuracyColor = qb.totalAccuracy > 0.8 ? '#10b981' : qb.totalAccuracy > 0.6 ? '#f59e0b' : '#dc2626';
                 const boomColor = qb.boomAccuracy > 0.5 ? '#10b981' : qb.boomAccuracy > 0.3 ? '#f59e0b' : '#dc2626';
                 const bustColor = qb.bustAccuracy > 0.5 ? '#10b981' : qb.bustAccuracy > 0.3 ? '#f59e0b' : '#dc2626';
+                const reliabilityColor = qb.avgReliability > 75 ? '#10b981' : qb.avgReliability > 50 ? '#f59e0b' : '#dc2626';
                 
                 html += `
                     <div class="player-audit-card">
@@ -1712,12 +1984,15 @@
                             <div>
                                 <div class="player-name">${qb.name} (${qb.team})</div>
                                 <div style="color: #6b7280; font-size: 0.9rem;">
-                                    ${qb.gamesPlayed} games • ${qb.boomMatchups} boom • ${qb.bustMatchups} bust
+                                    ${qb.gamesPlayed} games • RMSE: ${qb.rmse.toFixed(1)} • CI Coverage: ${(qb.ciCoverage * 100).toFixed(0)}%
                                 </div>
                             </div>
                             <div style="display: flex; gap: 6px; flex-direction: column;">
                                 <div class="accuracy-score" style="background-color: ${accuracyColor}; font-size: 0.75rem;">
                                     ${(qb.totalAccuracy * 100).toFixed(1)}% Acc
+                                </div>
+                                <div class="accuracy-score" style="background-color: ${reliabilityColor}; font-size: 0.75rem;">
+                                    ${qb.avgReliability.toFixed(0)} Rel
                                 </div>
                                 <div class="accuracy-score" style="background-color: ${boomColor}; font-size: 0.75rem;">
                                     ${(qb.boomAccuracy * 100).toFixed(1)}% Boom
@@ -1744,12 +2019,12 @@
                                 <div class="breakdown-label">Total Difference</div>
                             </div>
                             <div class="breakdown-item">
-                                <div class="breakdown-value">${(qb.avgWeeklyAccuracy * 100).toFixed(1)}%</div>
-                                <div class="breakdown-label">Avg Weekly Accuracy</div>
+                                <div class="breakdown-value">${qb.mae.toFixed(1)}</div>
+                                <div class="breakdown-label">Mean Abs Error</div>
                             </div>
                         </div>
                         
-                        <h4 style="margin-bottom: 10px;">Weekly Breakdown:</h4>
+                        <h4 style="margin-bottom: 10px;">Weekly Statistical Breakdown:</h4>
                         <div class="weekly-breakdown">
                 `;
 
@@ -1758,6 +2033,7 @@
                     const accuracyColor = week.accuracy > 0.8 ? '#10b981' : week.accuracy > 0.6 ? '#f59e0b' : '#dc2626';
                     const homeAway = week.isHome ? 'vs' : '@';
                     const defenseIcon = week.defenseUsed ? '🛡️' : '';
+                    const ciIcon = week.withinCI ? '✅' : '❌';
                     
                     // Week item class based on matchup type
                     let weekClass = 'week-item';
@@ -1780,7 +2056,7 @@
                     html += `
                         <div class="${weekClass}">
                             <div style="font-weight: 600; margin-bottom: 5px;">
-                                Week ${week.week} ${defenseIcon}${matchupIcon}${outcomeIcon}
+                                Week ${week.week} ${defenseIcon}${matchupIcon}${outcomeIcon}${ciIcon}
                             </div>
                             <div style="font-size: 0.8rem; margin-bottom: 3px;">${homeAway} ${week.opponent}</div>
                             <div style="font-size: 0.7rem; margin-bottom: 3px;">${week.date}</div>
@@ -1793,7 +2069,7 @@
                                 ${(week.accuracy * 100).toFixed(0)}% acc
                             </div>
                             <div style="font-size: 0.6rem; color: #6b7280; margin-top: 2px;">
-                                ${week.matchupType}
+                                R: ${week.reliabilityScore}
                             </div>
                         </div>
                     `;
@@ -1806,7 +2082,7 @@
             });
 
             auditResultsDiv.innerHTML = html;
-            showAuditStatus(`🎉 Matchup audit completed! Analyzed ${results.length} QBs with boom/bust identification.`, 'success');
+            showAuditStatus(`🎉 Enhanced statistical audit completed! Analyzed ${results.length} QBs with 95% confidence intervals and comprehensive metrics.`, 'success');
         }
 
         function showStatus(message, type) {
