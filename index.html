@@ -255,6 +255,42 @@
             margin-top: 5px;
         }
 
+        .defense-insights {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .defense-insights h4 {
+            color: #92400e;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .defense-weakness {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 5px;
+            display: inline-block;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .defense-strength {
+            background: rgba(34, 197, 94, 0.1);
+            color: #059669;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 5px;
+            display: inline-block;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
         .audit-summary {
             background: linear-gradient(135deg, #fef3c7 0%, #fef3c7 100%);
             border-radius: 15px;
@@ -373,6 +409,26 @@
             margin: 20px 0;
         }
 
+        .github-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .github-link:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.05);
+        }
+
         @media (max-width: 968px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -381,14 +437,25 @@
             .header h1 {
                 font-size: 2rem;
             }
+
+            .github-link {
+                position: static;
+                display: block;
+                margin: 10px auto;
+                width: fit-content;
+            }
         }
     </style>
 </head>
 <body>
+    <a href="https://github.com/yourusername/qb-projections" target="_blank" class="github-link">
+        ⭐ Star on GitHub
+    </a>
+
     <div class="container">
         <div class="header">
             <h1>🏈 Advanced QB Fantasy Projections</h1>
-            <p>Powered by Coverage Analysis &amp; Game Script Intelligence</p>
+            <p>Powered by Coverage Analysis, Game Script Intelligence &amp; Defensive Tendencies</p>
         </div>
 
         <div class="nav-tabs">
@@ -404,6 +471,13 @@
                         <label for="qb-select">Select Quarterback</label>
                         <select id="qb-select">
                             <option value="">Loading QBs...</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="opponent-select">Select Opponent</label>
+                        <select id="opponent-select">
+                            <option value="">Loading Teams...</option>
                         </select>
                     </div>
 
@@ -427,7 +501,7 @@
                 <div class="results-area">
                     <div id="projection-results">
                         <div class="loading">
-                            Select a quarterback to generate projections...
+                            Select a quarterback and opponent to generate projections...
                         </div>
                     </div>
                 </div>
@@ -491,6 +565,7 @@
         
         let supabaseClient;
         let qbData = [];
+        let defenseData = [];
         let csvData = [];
         let gameLogData = [];
 
@@ -499,15 +574,16 @@
             try {
                 const { createClient } = supabase;
                 supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('Supabase initialized');
-                await loadQBData();
+                console.log('🚀 Application loaded successfully');
+                console.log('📊 Loading data from Supabase...');
+                await Promise.all([loadQBData(), loadDefenseData()]);
             } catch (error) {
-                console.error('Failed to initialize Supabase:', error);
+                console.error('❌ Failed to initialize:', error);
                 showStatus('Failed to initialize database connection', 'error');
             }
         });
 
-        // QB Projector Class
+        // Enhanced QB Projector Class with Defense Integration
         class QBProjector {
             constructor() {
                 this.gameScriptAdjustments = {
@@ -528,9 +604,25 @@
                         veryHigh: 1.06    // Over 52
                     }
                 };
+
+                // Defense-based adjustments
+                this.defenseFactors = {
+                    passDefense: {
+                        excellent: 0.92,  // Top 5
+                        good: 0.96,       // Top 10
+                        average: 1.0,     // Middle 12
+                        poor: 1.04,       // Bottom 10
+                        terrible: 1.08    // Bottom 5
+                    },
+                    blitzRate: {
+                        heavy: 0.95,      // High pressure teams
+                        moderate: 1.0,
+                        light: 1.02       // Low pressure teams
+                    }
+                };
             }
             
-            calculateProjection(qb, gameContext) {
+            calculateProjection(qb, gameContext, opponentDefense = null) {
                 try {
                     const baseFPPerDB = qb.weighted_fp_per_db || 0.4;
                     const seasonDropbacks = qb.total_dropbacks || 500;
@@ -559,8 +651,19 @@
                         else if (total < 52) multiplier *= this.gameScriptAdjustments.total.high;
                         else multiplier *= this.gameScriptAdjustments.total.veryHigh;
                     }
+
+                    // NEW: Defense-specific adjustments
+                    let defenseMultiplier = 1.0;
+                    let defenseInsights = null;
+
+                    if (opponentDefense) {
+                        const defenseAnalysis = this.analyzeDefense(opponentDefense);
+                        defenseMultiplier = defenseAnalysis.multiplier;
+                        defenseInsights = defenseAnalysis.insights;
+                    }
                     
-                    const adjustedFPPerDB = baseFPPerDB * multiplier;
+                    const totalMultiplier = multiplier * defenseMultiplier;
+                    const adjustedFPPerDB = baseFPPerDB * totalMultiplier;
                     const totalProjectedFP = adjustedFPPerDB * estimatedDropbacks;
                     
                     return {
@@ -569,15 +672,101 @@
                         estimatedDropbacks: estimatedDropbacks,
                         totalProjectedFP: totalProjectedFP,
                         gameScriptMultiplier: multiplier,
+                        defenseMultiplier: defenseMultiplier,
+                        totalMultiplier: totalMultiplier,
+                        defenseInsights: defenseInsights,
                         adjustmentBreakdown: {
                             spreadAdj: gameContext.spread !== null ? this.getSpreadMultiplier(gameContext.spread) : 1.0,
-                            totalAdj: gameContext.total !== null ? this.getTotalMultiplier(gameContext.total) : 1.0
+                            totalAdj: gameContext.total !== null ? this.getTotalMultiplier(gameContext.total) : 1.0,
+                            defenseAdj: defenseMultiplier
                         }
                     };
                 } catch (error) {
-                    console.error('Projection calculation error:', error);
+                    console.error('❌ Projection calculation error:', error);
                     return null;
                 }
+            }
+
+            analyzeDefense(defense) {
+                let multiplier = 1.0;
+                const insights = {
+                    weaknesses: [],
+                    strengths: [],
+                    coverageNotes: [],
+                    pressureNotes: []
+                };
+
+                // Overall passing defense rating (based on QB rating allowed)
+                const overallRating = defense.overall_rating || defense.man_rating || 95;
+                if (overallRating > 105) {
+                    multiplier *= 1.06;
+                    insights.weaknesses.push('Poor Overall Pass Defense');
+                } else if (overallRating > 95) {
+                    multiplier *= 1.03;
+                    insights.weaknesses.push('Below Average Pass Defense');
+                } else if (overallRating < 80) {
+                    multiplier *= 0.94;
+                    insights.strengths.push('Elite Pass Defense');
+                } else if (overallRating < 90) {
+                    multiplier *= 0.97;
+                    insights.strengths.push('Strong Pass Defense');
+                }
+
+                // Man coverage vulnerabilities
+                const manRating = defense.man_rating || 95;
+                if (manRating > 100) {
+                    multiplier *= 1.04;
+                    insights.weaknesses.push('Vulnerable in Man Coverage');
+                }
+
+                // Coverage frequency analysis
+                const manPct = defense.man_pct || 50;
+                const cover2Pct = defense.cover_2_pct || 15;
+                const cover3Pct = defense.cover_3_pct || 25;
+
+                if (manPct > 60) {
+                    insights.coverageNotes.push(`Heavy Man Coverage (${manPct.toFixed(1)}%)`);
+                } else if (manPct < 35) {
+                    insights.coverageNotes.push(`Zone-Heavy Defense (${(100-manPct).toFixed(1)}% Zone)`);
+                }
+
+                // Cover 2 weakness
+                const cover2Rating = defense.cover_2_rating || 95;
+                if (cover2Rating > 100 && cover2Pct > 10) {
+                    multiplier *= 1.03;
+                    insights.weaknesses.push(`Cover 2 Weakness (${cover2Rating.toFixed(1)} rating)`);
+                }
+
+                // Cover 3 weakness
+                const cover3Rating = defense.cover_3_rating || 95;
+                if (cover3Rating > 100 && cover3Pct > 15) {
+                    multiplier *= 1.03;
+                    insights.weaknesses.push(`Cover 3 Weakness (${cover3Rating.toFixed(1)} rating)`);
+                }
+
+                // Pressure rate analysis
+                const sackPct = defense.overall_sack_pct || defense.man_sack_pct || 6;
+                if (sackPct > 8) {
+                    multiplier *= 0.96;
+                    insights.strengths.push('High Pressure Defense');
+                    insights.pressureNotes.push(`${sackPct.toFixed(1)}% Sack Rate`);
+                } else if (sackPct < 5) {
+                    multiplier *= 1.02;
+                    insights.weaknesses.push('Low Pressure Defense');
+                    insights.pressureNotes.push(`Only ${sackPct.toFixed(1)}% Sack Rate`);
+                }
+
+                // Yards per attempt allowed
+                const ypaAllowed = defense.overall_ypa || defense.man_yards_per_attempt || 7.0;
+                if (ypaAllowed > 7.5) {
+                    multiplier *= 1.04;
+                    insights.weaknesses.push('Allows Big Plays');
+                } else if (ypaAllowed < 6.5) {
+                    multiplier *= 0.96;
+                    insights.strengths.push('Limits Big Plays');
+                }
+
+                return { multiplier, insights };
             }
             
             getSpreadMultiplier(spread) {
@@ -604,8 +793,7 @@
         // Load QB data from Supabase
         async function loadQBData() {
             try {
-                console.log('Loading QB data...');
-                showStatus('Loading quarterback data...', 'loading');
+                console.log('📈 Loading QB data...');
                 
                 const { data, error } = await supabaseClient
                     .from('players')
@@ -617,7 +805,7 @@
                     .limit(50);
 
                 if (error) {
-                    console.error('Supabase error:', error);
+                    console.error('❌ Supabase error:', error);
                     throw new Error(`Database error: ${error.message}`);
                 }
 
@@ -626,21 +814,52 @@
                 }
 
                 qbData = data;
-                console.log(`Loaded ${qbData.length} quarterbacks`);
+                console.log(`✅ Loaded ${qbData.length} quarterbacks`);
                 
                 populateQBSelect();
                 showStatus('Quarterback data loaded successfully!', 'success');
 
-                // Enable audit button if CSV files are loaded
-                checkAuditButtonStatus();
-
             } catch (error) {
-                console.error('Error loading QB data:', error);
+                console.error('❌ Error loading QB data:', error);
                 showStatus(`Failed to load QB data: ${error.message}`, 'error');
                 
                 // Populate with placeholder message
                 const select = document.getElementById('qb-select');
                 select.innerHTML = '<option value="">Failed to load QBs - check console</option>';
+            }
+        }
+
+        // Load Defense data from Supabase
+        async function loadDefenseData() {
+            try {
+                console.log('🛡️ Loading defense data...');
+                
+                const { data, error } = await supabaseClient
+                    .from('opponent_defense_tendencies')
+                    .select('*')
+                    .order('team', { ascending: true });
+
+                if (error) {
+                    console.error('❌ Defense data error:', error);
+                    throw new Error(`Defense data error: ${error.message}`);
+                }
+
+                if (!data || data.length === 0) {
+                    console.warn('⚠️ No defense data found');
+                    return;
+                }
+
+                defenseData = data;
+                console.log(`✅ Loaded ${defenseData.length} team defenses`);
+                
+                populateOpponentSelect();
+                checkAuditButtonStatus();
+
+            } catch (error) {
+                console.error('❌ Error loading defense data:', error);
+                // Don't show error for defense data since it's optional
+                defenseData = [];
+                populateOpponentSelect();
             }
         }
 
@@ -656,6 +875,33 @@
             });
         }
 
+        function populateOpponentSelect() {
+            const select = document.getElementById('opponent-select');
+            select.innerHTML = '<option value="">Select opponent</option>';
+
+            if (defenseData.length > 0) {
+                defenseData.forEach((team) => {
+                    const option = document.createElement('option');
+                    option.value = team.team;
+                    option.textContent = `${team.team_name} (${team.team})`;
+                    select.appendChild(option);
+                });
+            } else {
+                // Fallback to basic team list if no defense data
+                const teams = [
+                    'ARI', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 'DEN',
+                    'DET', 'GB', 'HOU', 'IND', 'JAX', 'KC', 'LV', 'LAC', 'LAR', 'MIA',
+                    'MIN', 'NE', 'NO', 'NYG', 'NYJ', 'PHI', 'PIT', 'SF', 'SEA', 'TB', 'TEN', 'WAS'
+                ];
+                teams.forEach(team => {
+                    const option = document.createElement('option');
+                    option.value = team;
+                    option.textContent = team;
+                    select.appendChild(option);
+                });
+            }
+        }
+
         // Tab switching
         function switchTab(tabName) {
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
@@ -665,14 +911,20 @@
             document.getElementById(`${tabName}-tab`).classList.add('active');
         }
 
-        // Generate single projection
+        // Generate single projection with defense analysis
         function generateProjection() {
             const qbName = document.getElementById('qb-select').value;
+            const opponentTeam = document.getElementById('opponent-select').value;
             const spread = parseFloat(document.getElementById('spread-input').value) || null;
             const total = parseFloat(document.getElementById('total-input').value) || null;
 
             if (!qbName) {
                 showStatus('Please select a quarterback', 'error');
+                return;
+            }
+
+            if (!opponentTeam) {
+                showStatus('Please select an opponent', 'error');
                 return;
             }
 
@@ -682,24 +934,67 @@
                 return;
             }
 
+            // Find opponent defense data
+            const opponentDefense = defenseData.find(def => def.team === opponentTeam);
+
             const gameContext = { spread, total };
-            const projection = projector.calculateProjection(selectedQB, gameContext);
+            const projection = projector.calculateProjection(selectedQB, gameContext, opponentDefense);
             
             if (projection) {
-                displayProjection(selectedQB, projection, gameContext);
+                displayProjection(selectedQB, projection, gameContext, opponentDefense);
                 showStatus('Projection generated successfully!', 'success');
             } else {
                 showStatus('Failed to generate projection', 'error');
             }
         }
 
-        function displayProjection(qb, projection, gameContext) {
+        function displayProjection(qb, projection, gameContext, opponentDefense) {
             const resultsDiv = document.getElementById('projection-results');
+            
+            const opponentName = opponentDefense ? opponentDefense.team_name : gameContext.opponent || 'Unknown';
+            const opponentTeam = opponentDefense ? opponentDefense.team : gameContext.opponent || 'UNK';
+            
+            let defenseInsightsHTML = '';
+            if (projection.defenseInsights) {
+                const insights = projection.defenseInsights;
+                defenseInsightsHTML = `
+                    <div class="defense-insights">
+                        <h4>🛡️ Defensive Analysis: ${opponentName}</h4>
+                        
+                        ${insights.weaknesses.length > 0 ? `
+                            <div style="margin-bottom: 10px;">
+                                <strong>Exploitable Weaknesses:</strong><br>
+                                ${insights.weaknesses.map(w => `<span class="defense-weakness">${w}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${insights.strengths.length > 0 ? `
+                            <div style="margin-bottom: 10px;">
+                                <strong>Defensive Strengths:</strong><br>
+                                ${insights.strengths.map(s => `<span class="defense-strength">${s}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${insights.coverageNotes.length > 0 ? `
+                            <div style="margin-bottom: 10px;">
+                                <strong>Coverage Tendencies:</strong> ${insights.coverageNotes.join(', ')}
+                            </div>
+                        ` : ''}
+                        
+                        ${insights.pressureNotes.length > 0 ? `
+                            <div>
+                                <strong>Pass Rush:</strong> ${insights.pressureNotes.join(', ')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
             
             resultsDiv.innerHTML = `
                 <div class="projection-card">
                     <div class="projection-header">
                         <span class="qb-name">${qb.name} (${qb.team})</span>
+                        <span class="opponent">vs ${opponentTeam}</span>
                     </div>
                     
                     <div class="projection-stats">
@@ -716,8 +1011,8 @@
                             <div class="stat-label">Estimated Dropbacks</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-value">${((projection.gameScriptMultiplier - 1) * 100).toFixed(1)}%</div>
-                            <div class="stat-label">Game Script Adjustment</div>
+                            <div class="stat-value">${((projection.totalMultiplier - 1) * 100).toFixed(1)}%</div>
+                            <div class="stat-label">Total Adjustment</div>
                         </div>
                     </div>
                     
@@ -744,8 +1039,14 @@
                                 <div class="breakdown-value">${((projection.adjustmentBreakdown.totalAdj - 1) * 100).toFixed(1)}%</div>
                                 <div class="breakdown-label">Total Adj</div>
                             </div>
+                            <div class="breakdown-item">
+                                <div class="breakdown-value">${((projection.adjustmentBreakdown.defenseAdj - 1) * 100).toFixed(1)}%</div>
+                                <div class="breakdown-label">Defense Adj</div>
+                            </div>
                         </div>
                     </div>
+                    
+                    ${defenseInsightsHTML}
                 </div>
             `;
         }
@@ -755,7 +1056,7 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            showAuditStatus('Parsing odds CSV file...', 'loading');
+            showAuditStatus('📁 Parsing odds CSV file...', 'loading');
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -764,14 +1065,14 @@
                     header: true,
                     complete: function(results) {
                         csvData = results.data.filter(row => row.game_id && row.home_team && row.away_team);
-                        console.log('Odds CSV loaded:', csvData.length, 'games');
+                        console.log('✅ Odds CSV loaded:', csvData.length, 'games');
                         
                         checkAuditButtonStatus();
-                        showAuditStatus(`Odds CSV loaded successfully! ${csvData.length} games found.`, 'success');
+                        showAuditStatus(`✅ Odds CSV loaded successfully! ${csvData.length} games found.`, 'success');
                     },
                     error: function(error) {
-                        console.error('CSV parsing error:', error);
-                        showAuditStatus('Error parsing odds CSV file', 'error');
+                        console.error('❌ CSV parsing error:', error);
+                        showAuditStatus('❌ Error parsing odds CSV file', 'error');
                     }
                 });
             };
@@ -783,7 +1084,7 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            showAuditStatus('Parsing game log CSV file...', 'loading');
+            showAuditStatus('📁 Parsing game log CSV file...', 'loading');
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -793,14 +1094,14 @@
                     complete: function(results) {
                         // Process the game log data
                         gameLogData = processGameLogData(results.data);
-                        console.log('Game log CSV loaded:', Object.keys(gameLogData).length, 'players');
+                        console.log('✅ Game log CSV loaded:', Object.keys(gameLogData).length, 'players');
                         
                         checkAuditButtonStatus();
-                        showAuditStatus(`Game log CSV loaded successfully! ${Object.keys(gameLogData).length} players found.`, 'success');
+                        showAuditStatus(`✅ Game log CSV loaded successfully! ${Object.keys(gameLogData).length} players found.`, 'success');
                     },
                     error: function(error) {
-                        console.error('Game log parsing error:', error);
-                        showAuditStatus('Error parsing game log CSV file', 'error');
+                        console.error('❌ Game log parsing error:', error);
+                        showAuditStatus('❌ Error parsing game log CSV file', 'error');
                     }
                 });
             };
@@ -906,10 +1207,10 @@
             return weekData ? weekData.points : null;
         }
 
-        // Season Audit
+        // Enhanced Season Audit with Defense Data
         async function runSeasonAudit() {
             if (csvData.length === 0 || qbData.length === 0 || Object.keys(gameLogData).length === 0) {
-                showAuditStatus('Please upload both CSV files and ensure QB data is loaded', 'error');
+                showAuditStatus('❌ Please upload both CSV files and ensure QB data is loaded', 'error');
                 return;
             }
 
@@ -926,7 +1227,7 @@
                 return estimatedGames >= minGames;
             });
 
-            console.log(`Found ${eligibleQBs.length} eligible QBs for audit`);
+            console.log(`🔍 Found ${eligibleQBs.length} eligible QBs for audit`);
             
             const auditResults = [];
             
@@ -958,6 +1259,9 @@
                         const isHome = homeTeam === qb.team;
                         const opponent = isHome ? awayTeam : homeTeam;
                         
+                        // Find opponent defense data
+                        const opponentDefense = defenseData.find(def => def.team === opponent);
+                        
                         const spread = isHome ? parseFloat(game.dk_spread_home) : parseFloat(game.dk_spread_away);
                         const total = parseFloat(game.dk_total_point);
                         const week = getWeekFromDate(game.commence_time);
@@ -967,7 +1271,8 @@
                             total: isNaN(total) ? null : total
                         };
 
-                        const projection = projector.calculateProjection(qb, gameContext);
+                        // Use enhanced projection with defense data
+                        const projection = projector.calculateProjection(qb, gameContext, opponentDefense);
                         
                         if (projection && typeof week === 'number') {
                             const projectedFP = projection.totalProjectedFP;
@@ -984,7 +1289,8 @@
                                     projected: projectedFP,
                                     actual: actualFP,
                                     diff: actualFP - projectedFP,
-                                    accuracy: Math.max(0, 1 - (Math.abs(actualFP - projectedFP) / Math.max(actualFP, 1)))
+                                    accuracy: Math.max(0, 1 - (Math.abs(actualFP - projectedFP) / Math.max(actualFP, 1))),
+                                    defenseUsed: !!opponentDefense
                                 });
 
                                 totalProjected += projectedFP;
@@ -992,7 +1298,7 @@
                             }
                         }
                     } catch (error) {
-                        console.error('Error processing game:', error);
+                        console.error('❌ Error processing game:', error);
                     }
                 }
 
@@ -1000,6 +1306,7 @@
                     const avgAccuracy = weeklyResults.reduce((sum, week) => sum + week.accuracy, 0) / weeklyResults.length;
                     const totalError = Math.abs(totalActual - totalProjected);
                     const totalAccuracy = Math.max(0, 1 - (totalError / Math.max(totalActual, 1)));
+                    const defenseDataUsage = weeklyResults.filter(w => w.defenseUsed).length / weeklyResults.length;
 
                     auditResults.push({
                         name: qb.name,
@@ -1010,6 +1317,7 @@
                         totalDiff: totalActual - totalProjected,
                         totalAccuracy: totalAccuracy,
                         avgWeeklyAccuracy: avgAccuracy,
+                        defenseDataUsage: defenseDataUsage,
                         weeklyResults: weeklyResults.sort((a, b) => a.week - b.week)
                     });
                 }
@@ -1031,7 +1339,7 @@
             const auditResultsDiv = document.getElementById('audit-results');
             
             if (results.length === 0) {
-                auditResultsDiv.innerHTML = '<div class="loading">No qualifying quarterbacks found.</div>';
+                auditResultsDiv.innerHTML = '<div class="loading">❌ No qualifying quarterbacks found.</div>';
                 return;
             }
 
@@ -1039,10 +1347,11 @@
             const totalProjected = results.reduce((sum, qb) => sum + qb.totalProjected, 0);
             const totalActual = results.reduce((sum, qb) => sum + qb.totalActual, 0);
             const totalGames = results.reduce((sum, qb) => sum + qb.gamesPlayed, 0);
+            const avgDefenseUsage = results.reduce((sum, qb) => sum + qb.defenseDataUsage, 0) / results.length;
 
             let html = `
                 <div class="audit-summary">
-                    <h2>📊 2024 NFL Season Audit Summary</h2>
+                    <h2>📊 2024 NFL Season Audit Summary (Enhanced with Defense Data)</h2>
                     <div class="breakdown-grid" style="margin-top: 20px;">
                         <div class="breakdown-item">
                             <div class="breakdown-value">${results.length}</div>
@@ -1055,6 +1364,10 @@
                         <div class="breakdown-item">
                             <div class="breakdown-value">${(avgAccuracy * 100).toFixed(1)}%</div>
                             <div class="breakdown-label">Avg Accuracy</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-value">${(avgDefenseUsage * 100).toFixed(1)}%</div>
+                            <div class="breakdown-label">Defense Data Usage</div>
                         </div>
                         <div class="breakdown-item">
                             <div class="breakdown-value">${totalProjected.toFixed(0)}</div>
@@ -1080,7 +1393,9 @@
                         <div class="player-header">
                             <div>
                                 <div class="player-name">${qb.name} (${qb.team})</div>
-                                <div style="color: #6b7280; font-size: 0.9rem;">${qb.gamesPlayed} games analyzed</div>
+                                <div style="color: #6b7280; font-size: 0.9rem;">
+                                    ${qb.gamesPlayed} games • ${(qb.defenseDataUsage * 100).toFixed(0)}% defense data coverage
+                                </div>
                             </div>
                             <div class="accuracy-score" style="background-color: ${accuracyColor};">
                                 ${(qb.totalAccuracy * 100).toFixed(1)}% Accuracy
@@ -1116,10 +1431,11 @@
                     const diffColor = week.diff >= 0 ? '#10b981' : '#dc2626';
                     const accuracyColor = week.accuracy > 0.8 ? '#10b981' : week.accuracy > 0.6 ? '#f59e0b' : '#dc2626';
                     const homeAway = week.isHome ? 'vs' : '@';
+                    const defenseIcon = week.defenseUsed ? '🛡️' : '';
                     
                     html += `
                         <div class="week-item">
-                            <div style="font-weight: 600; margin-bottom: 5px;">Week ${week.week}</div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">Week ${week.week} ${defenseIcon}</div>
                             <div style="font-size: 0.8rem; margin-bottom: 3px;">${homeAway} ${week.opponent}</div>
                             <div style="font-size: 0.7rem; margin-bottom: 3px;">${week.date}</div>
                             <div class="week-projected">P: ${week.projected.toFixed(1)}</div>
@@ -1141,7 +1457,7 @@
             });
 
             auditResultsDiv.innerHTML = html;
-            showAuditStatus(`Audit completed! Analyzed ${results.length} QBs across ${totalGames} total games with real data.`, 'success');
+            showAuditStatus(`🎉 Enhanced audit completed! Analyzed ${results.length} QBs across ${totalGames} games with defense-adjusted projections (${(avgDefenseUsage * 100).toFixed(0)}% coverage).`, 'success');
         }
 
         function showStatus(message, type) {
