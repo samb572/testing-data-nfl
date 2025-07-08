@@ -291,6 +291,27 @@
             font-weight: 500;
         }
 
+        .matchup-grade {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+        }
+
+        .grade-display {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .grade-A { color: #059669; }
+        .grade-B { color: #10b981; }
+        .grade-C { color: #f59e0b; }
+        .grade-D { color: #ef4444; }
+        .grade-F { color: #dc2626; }
+
         .audit-summary {
             background: linear-gradient(135deg, #fef3c7 0%, #fef3c7 100%);
             border-radius: 15px;
@@ -583,41 +604,56 @@
             }
         });
 
-        // Enhanced QB Projector Class with Defense Integration
+        // ENHANCED QB Projector with AGGRESSIVE matchup adjustments
         class QBProjector {
             constructor() {
+                // MUCH MORE AGGRESSIVE game script adjustments
                 this.gameScriptAdjustments = {
                     spread: {
-                        bigFavorite: 0.92,    // -10 or more
-                        favorite: 0.96,       // -7 to -9.5
-                        smallFavorite: 0.98,  // -3 to -6.5
+                        bigFavorite: 0.75,    // -10 or more (25% reduction!)
+                        favorite: 0.85,       // -7 to -9.5 (15% reduction)
+                        smallFavorite: 0.92,  // -3 to -6.5 (8% reduction)
                         pickEm: 1.0,          // -2.5 to +2.5
-                        smallUnderdog: 1.02,  // +3 to +6.5
-                        underdog: 1.05,       // +7 to +9.5
-                        bigUnderdog: 1.08     // +10 or more
+                        smallUnderdog: 1.12,  // +3 to +6.5 (12% boost)
+                        underdog: 1.25,       // +7 to +9.5 (25% boost!)
+                        bigUnderdog: 1.40     // +10 or more (40% boost!)
                     },
                     total: {
-                        veryLow: 0.94,    // Under 40
-                        low: 0.97,        // 40-43.5
+                        veryLow: 0.70,    // Under 40 (30% reduction!)
+                        low: 0.85,        // 40-43.5 (15% reduction)
                         average: 1.0,     // 44-47.5
-                        high: 1.03,       // 48-51.5
-                        veryHigh: 1.06    // Over 52
+                        high: 1.18,       // 48-51.5 (18% boost)
+                        veryHigh: 1.35    // Over 52 (35% boost!)
                     }
                 };
 
-                // Defense-based adjustments
-                this.defenseFactors = {
-                    passDefense: {
-                        excellent: 0.92,  // Top 5
-                        good: 0.96,       // Top 10
-                        average: 1.0,     // Middle 12
-                        poor: 1.04,       // Bottom 10
-                        terrible: 1.08    // Bottom 5
+                // AGGRESSIVE defense-based adjustments
+                this.defenseMultipliers = {
+                    // Based on overall defense ranking (1-32)
+                    elite: 0.70,      // Top 5 defenses (30% reduction!)
+                    good: 0.85,       // 6-12 defenses (15% reduction)
+                    average: 1.0,     // 13-20 defenses
+                    poor: 1.20,       // 21-27 defenses (20% boost)
+                    terrible: 1.45    // 28-32 defenses (45% boost!)
+                };
+
+                // Coverage-specific multipliers
+                this.coverageMultipliers = {
+                    manCoverage: {
+                        elite: 0.80,      // Great man coverage
+                        poor: 1.25       // Poor man coverage
                     },
-                    blitzRate: {
-                        heavy: 0.95,      // High pressure teams
-                        moderate: 1.0,
-                        light: 1.02       // Low pressure teams
+                    cover2: {
+                        elite: 0.85,
+                        poor: 1.20
+                    },
+                    cover3: {
+                        elite: 0.85,
+                        poor: 1.20
+                    },
+                    pressure: {
+                        heavy: 0.75,      // High pressure (25% reduction)
+                        light: 1.20       // Low pressure (20% boost)
                     }
                 };
             }
@@ -626,59 +662,80 @@
                 try {
                     const baseFPPerDB = qb.weighted_fp_per_db || 0.4;
                     const seasonDropbacks = qb.total_dropbacks || 500;
-                    const estimatedDropbacks = Math.round(seasonDropbacks / 17);
+                    let estimatedDropbacks = Math.round(seasonDropbacks / 17);
                     
-                    let multiplier = 1.0;
+                    let gameScriptMultiplier = 1.0;
+                    let defenseMultiplier = 1.0;
+                    let dropbackAdjustment = 1.0;
                     
-                    // Spread adjustments
+                    // AGGRESSIVE Spread adjustments
                     if (gameContext.spread !== null) {
                         const spread = gameContext.spread;
-                        if (spread <= -10) multiplier *= this.gameScriptAdjustments.spread.bigFavorite;
-                        else if (spread <= -7) multiplier *= this.gameScriptAdjustments.spread.favorite;
-                        else if (spread <= -3) multiplier *= this.gameScriptAdjustments.spread.smallFavorite;
-                        else if (spread <= 2.5) multiplier *= this.gameScriptAdjustments.spread.pickEm;
-                        else if (spread <= 6.5) multiplier *= this.gameScriptAdjustments.spread.smallUnderdog;
-                        else if (spread <= 9.5) multiplier *= this.gameScriptAdjustments.spread.underdog;
-                        else multiplier *= this.gameScriptAdjustments.spread.bigUnderdog;
+                        if (spread <= -10) {
+                            gameScriptMultiplier *= this.gameScriptAdjustments.spread.bigFavorite;
+                            dropbackAdjustment *= 0.85; // Fewer dropbacks when blowing out
+                        }
+                        else if (spread <= -7) gameScriptMultiplier *= this.gameScriptAdjustments.spread.favorite;
+                        else if (spread <= -3) gameScriptMultiplier *= this.gameScriptAdjustments.spread.smallFavorite;
+                        else if (spread <= 2.5) gameScriptMultiplier *= this.gameScriptAdjustments.spread.pickEm;
+                        else if (spread <= 6.5) {
+                            gameScriptMultiplier *= this.gameScriptAdjustments.spread.smallUnderdog;
+                            dropbackAdjustment *= 1.08; // More dropbacks when behind
+                        }
+                        else if (spread <= 9.5) {
+                            gameScriptMultiplier *= this.gameScriptAdjustments.spread.underdog;
+                            dropbackAdjustment *= 1.15; // Many more dropbacks
+                        }
+                        else {
+                            gameScriptMultiplier *= this.gameScriptAdjustments.spread.bigUnderdog;
+                            dropbackAdjustment *= 1.25; // Garbage time heaven
+                        }
                     }
                     
-                    // Total adjustments
+                    // AGGRESSIVE Total adjustments
                     if (gameContext.total !== null) {
                         const total = gameContext.total;
-                        if (total < 40) multiplier *= this.gameScriptAdjustments.total.veryLow;
-                        else if (total < 44) multiplier *= this.gameScriptAdjustments.total.low;
-                        else if (total < 48) multiplier *= this.gameScriptAdjustments.total.average;
-                        else if (total < 52) multiplier *= this.gameScriptAdjustments.total.high;
-                        else multiplier *= this.gameScriptAdjustments.total.veryHigh;
+                        if (total < 40) gameScriptMultiplier *= this.gameScriptAdjustments.total.veryLow;
+                        else if (total < 44) gameScriptMultiplier *= this.gameScriptAdjustments.total.low;
+                        else if (total < 48) gameScriptMultiplier *= this.gameScriptAdjustments.total.average;
+                        else if (total < 52) gameScriptMultiplier *= this.gameScriptAdjustments.total.high;
+                        else gameScriptMultiplier *= this.gameScriptAdjustments.total.veryHigh;
                     }
 
-                    // NEW: Defense-specific adjustments
-                    let defenseMultiplier = 1.0;
+                    // AGGRESSIVE Defense-specific adjustments
                     let defenseInsights = null;
-
                     if (opponentDefense) {
-                        const defenseAnalysis = this.analyzeDefense(opponentDefense);
+                        const defenseAnalysis = this.analyzeDefenseAggressive(opponentDefense);
                         defenseMultiplier = defenseAnalysis.multiplier;
                         defenseInsights = defenseAnalysis.insights;
                     }
                     
-                    const totalMultiplier = multiplier * defenseMultiplier;
+                    // Apply dropback adjustment
+                    estimatedDropbacks = Math.round(estimatedDropbacks * dropbackAdjustment);
+                    
+                    const totalMultiplier = gameScriptMultiplier * defenseMultiplier;
                     const adjustedFPPerDB = baseFPPerDB * totalMultiplier;
                     const totalProjectedFP = adjustedFPPerDB * estimatedDropbacks;
+                    
+                    // Calculate matchup grade
+                    const matchupGrade = this.calculateMatchupGrade(totalMultiplier);
                     
                     return {
                         baseFPPerDB: baseFPPerDB,
                         adjustedFPPerDB: adjustedFPPerDB,
                         estimatedDropbacks: estimatedDropbacks,
                         totalProjectedFP: totalProjectedFP,
-                        gameScriptMultiplier: multiplier,
+                        gameScriptMultiplier: gameScriptMultiplier,
                         defenseMultiplier: defenseMultiplier,
                         totalMultiplier: totalMultiplier,
+                        dropbackAdjustment: dropbackAdjustment,
+                        matchupGrade: matchupGrade,
                         defenseInsights: defenseInsights,
                         adjustmentBreakdown: {
                             spreadAdj: gameContext.spread !== null ? this.getSpreadMultiplier(gameContext.spread) : 1.0,
                             totalAdj: gameContext.total !== null ? this.getTotalMultiplier(gameContext.total) : 1.0,
-                            defenseAdj: defenseMultiplier
+                            defenseAdj: defenseMultiplier,
+                            dropbackAdj: dropbackAdjustment
                         }
                     };
                 } catch (error) {
@@ -687,7 +744,7 @@
                 }
             }
 
-            analyzeDefense(defense) {
+            analyzeDefenseAggressive(defense) {
                 let multiplier = 1.0;
                 const insights = {
                     weaknesses: [],
@@ -696,77 +753,110 @@
                     pressureNotes: []
                 };
 
-                // Overall passing defense rating (based on QB rating allowed)
+                // Rank defense based on overall rating to determine base multiplier
                 const overallRating = defense.overall_rating || defense.man_rating || 95;
-                if (overallRating > 105) {
-                    multiplier *= 1.06;
-                    insights.weaknesses.push('Poor Overall Pass Defense');
-                } else if (overallRating > 95) {
-                    multiplier *= 1.03;
-                    insights.weaknesses.push('Below Average Pass Defense');
-                } else if (overallRating < 80) {
-                    multiplier *= 0.94;
-                    insights.strengths.push('Elite Pass Defense');
-                } else if (overallRating < 90) {
-                    multiplier *= 0.97;
+                const rank = defense.rank || 16; // Default to middle rank if missing
+                
+                // AGGRESSIVE ranking-based adjustments
+                if (rank <= 5) {
+                    multiplier *= this.defenseMultipliers.elite;
+                    insights.strengths.push('ELITE Defense - Avoid!');
+                } else if (rank <= 12) {
+                    multiplier *= this.defenseMultipliers.good;
+                    insights.strengths.push('Strong Defense');
+                } else if (rank <= 20) {
+                    multiplier *= this.defenseMultipliers.average;
+                } else if (rank <= 27) {
+                    multiplier *= this.defenseMultipliers.poor;
+                    insights.weaknesses.push('Weak Defense - Target!');
+                } else {
+                    multiplier *= this.defenseMultipliers.terrible;
+                    insights.weaknesses.push('TERRIBLE Defense - SMASH SPOT!');
+                }
+
+                // AGGRESSIVE rating-based adjustments
+                if (overallRating > 110) {
+                    multiplier *= 1.35; // 35% boost for terrible defenses
+                    insights.weaknesses.push('Historically Bad Pass Defense');
+                } else if (overallRating > 100) {
+                    multiplier *= 1.20; // 20% boost
+                    insights.weaknesses.push('Poor Pass Defense');
+                } else if (overallRating < 75) {
+                    multiplier *= 0.70; // 30% reduction for elite defenses
+                    insights.strengths.push('ELITE Pass Defense');
+                } else if (overallRating < 85) {
+                    multiplier *= 0.85; // 15% reduction
                     insights.strengths.push('Strong Pass Defense');
                 }
 
-                // Man coverage vulnerabilities
+                // AGGRESSIVE man coverage analysis
                 const manRating = defense.man_rating || 95;
-                if (manRating > 100) {
-                    multiplier *= 1.04;
-                    insights.weaknesses.push('Vulnerable in Man Coverage');
-                }
-
-                // Coverage frequency analysis
                 const manPct = defense.man_pct || 50;
-                const cover2Pct = defense.cover_2_pct || 15;
-                const cover3Pct = defense.cover_3_pct || 25;
-
-                if (manPct > 60) {
-                    insights.coverageNotes.push(`Heavy Man Coverage (${manPct.toFixed(1)}%)`);
-                } else if (manPct < 35) {
-                    insights.coverageNotes.push(`Zone-Heavy Defense (${(100-manPct).toFixed(1)}% Zone)`);
+                
+                if (manRating > 105 && manPct > 50) {
+                    multiplier *= this.coverageMultipliers.manCoverage.poor;
+                    insights.weaknesses.push(`TERRIBLE Man Coverage (${manRating.toFixed(1)} rating, ${manPct.toFixed(1)}% usage)`);
+                } else if (manRating < 80 && manPct > 60) {
+                    multiplier *= this.coverageMultipliers.manCoverage.elite;
+                    insights.strengths.push(`Lockdown Man Coverage (${manRating.toFixed(1)} rating)`);
                 }
 
-                // Cover 2 weakness
+                // AGGRESSIVE coverage-specific weaknesses
                 const cover2Rating = defense.cover_2_rating || 95;
-                if (cover2Rating > 100 && cover2Pct > 10) {
-                    multiplier *= 1.03;
-                    insights.weaknesses.push(`Cover 2 Weakness (${cover2Rating.toFixed(1)} rating)`);
+                const cover2Pct = defense.cover_2_pct || 15;
+                if (cover2Rating > 105 && cover2Pct > 12) {
+                    multiplier *= this.coverageMultipliers.cover2.poor;
+                    insights.weaknesses.push(`Cover 2 WEAKNESS (${cover2Rating.toFixed(1)} rating, ${cover2Pct.toFixed(1)}% usage)`);
                 }
 
-                // Cover 3 weakness
                 const cover3Rating = defense.cover_3_rating || 95;
-                if (cover3Rating > 100 && cover3Pct > 15) {
-                    multiplier *= 1.03;
-                    insights.weaknesses.push(`Cover 3 Weakness (${cover3Rating.toFixed(1)} rating)`);
+                const cover3Pct = defense.cover_3_pct || 25;
+                if (cover3Rating > 105 && cover3Pct > 20) {
+                    multiplier *= this.coverageMultipliers.cover3.poor;
+                    insights.weaknesses.push(`Cover 3 WEAKNESS (${cover3Rating.toFixed(1)} rating, ${cover3Pct.toFixed(1)}% usage)`);
                 }
 
-                // Pressure rate analysis
+                // AGGRESSIVE pressure analysis
                 const sackPct = defense.overall_sack_pct || defense.man_sack_pct || 6;
-                if (sackPct > 8) {
-                    multiplier *= 0.96;
-                    insights.strengths.push('High Pressure Defense');
-                    insights.pressureNotes.push(`${sackPct.toFixed(1)}% Sack Rate`);
-                } else if (sackPct < 5) {
-                    multiplier *= 1.02;
-                    insights.weaknesses.push('Low Pressure Defense');
-                    insights.pressureNotes.push(`Only ${sackPct.toFixed(1)}% Sack Rate`);
+                if (sackPct > 9) {
+                    multiplier *= this.coverageMultipliers.pressure.heavy;
+                    insights.strengths.push(`HEAVY Pass Rush (${sackPct.toFixed(1)}% sack rate)`);
+                } else if (sackPct < 4) {
+                    multiplier *= this.coverageMultipliers.pressure.light;
+                    insights.weaknesses.push(`NO Pass Rush (${sackPct.toFixed(1)}% sack rate)`);
                 }
 
-                // Yards per attempt allowed
+                // AGGRESSIVE yards per attempt analysis
                 const ypaAllowed = defense.overall_ypa || defense.man_yards_per_attempt || 7.0;
-                if (ypaAllowed > 7.5) {
-                    multiplier *= 1.04;
-                    insights.weaknesses.push('Allows Big Plays');
-                } else if (ypaAllowed < 6.5) {
-                    multiplier *= 0.96;
-                    insights.strengths.push('Limits Big Plays');
+                if (ypaAllowed > 8.0) {
+                    multiplier *= 1.25;
+                    insights.weaknesses.push(`GIVES UP BIG PLAYS (${ypaAllowed.toFixed(1)} YPA)`);
+                } else if (ypaAllowed < 6.0) {
+                    multiplier *= 0.80;
+                    insights.strengths.push(`Limits Big Plays (${ypaAllowed.toFixed(1)} YPA)`);
+                }
+
+                // Completion percentage allowed
+                const compPct = defense.overall_completion_pct || defense.man_completion_pct || 65;
+                if (compPct > 68) {
+                    multiplier *= 1.15;
+                    insights.weaknesses.push(`High Completion % Allowed (${compPct.toFixed(1)}%)`);
+                } else if (compPct < 58) {
+                    multiplier *= 0.85;
+                    insights.strengths.push(`Forces Incompletions (${compPct.toFixed(1)}%)`);
                 }
 
                 return { multiplier, insights };
+            }
+
+            calculateMatchupGrade(totalMultiplier) {
+                if (totalMultiplier >= 1.30) return { grade: 'A+', color: 'grade-A', description: 'SMASH SPOT' };
+                if (totalMultiplier >= 1.20) return { grade: 'A', color: 'grade-A', description: 'Elite Matchup' };
+                if (totalMultiplier >= 1.10) return { grade: 'B+', color: 'grade-B', description: 'Great Matchup' };
+                if (totalMultiplier >= 1.05) return { grade: 'B', color: 'grade-B', description: 'Good Matchup' };
+                if (totalMultiplier >= 0.95) return { grade: 'C', color: 'grade-C', description: 'Average Matchup' };
+                if (totalMultiplier >= 0.85) return { grade: 'D', color: 'grade-D', description: 'Tough Matchup' };
+                return { grade: 'F', color: 'grade-F', description: 'AVOID' };
             }
             
             getSpreadMultiplier(spread) {
@@ -963,32 +1053,42 @@
                         
                         ${insights.weaknesses.length > 0 ? `
                             <div style="margin-bottom: 10px;">
-                                <strong>Exploitable Weaknesses:</strong><br>
+                                <strong>🎯 Exploitable Weaknesses:</strong><br>
                                 ${insights.weaknesses.map(w => `<span class="defense-weakness">${w}</span>`).join('')}
                             </div>
                         ` : ''}
                         
                         ${insights.strengths.length > 0 ? `
                             <div style="margin-bottom: 10px;">
-                                <strong>Defensive Strengths:</strong><br>
+                                <strong>⚠️ Defensive Strengths:</strong><br>
                                 ${insights.strengths.map(s => `<span class="defense-strength">${s}</span>`).join('')}
                             </div>
                         ` : ''}
                         
                         ${insights.coverageNotes.length > 0 ? `
                             <div style="margin-bottom: 10px;">
-                                <strong>Coverage Tendencies:</strong> ${insights.coverageNotes.join(', ')}
+                                <strong>📊 Coverage Tendencies:</strong> ${insights.coverageNotes.join(', ')}
                             </div>
                         ` : ''}
                         
                         ${insights.pressureNotes.length > 0 ? `
                             <div>
-                                <strong>Pass Rush:</strong> ${insights.pressureNotes.join(', ')}
+                                <strong>🏃 Pass Rush:</strong> ${insights.pressureNotes.join(', ')}
                             </div>
                         ` : ''}
                     </div>
                 `;
             }
+
+            // Matchup grade display
+            const matchupGradeHTML = `
+                <div class="matchup-grade">
+                    <div class="grade-display ${projection.matchupGrade.color}">${projection.matchupGrade.grade}</div>
+                    <div style="font-size: 1.2rem; font-weight: 600; color: #374151;">
+                        ${projection.matchupGrade.description}
+                    </div>
+                </div>
+            `;
             
             resultsDiv.innerHTML = `
                 <div class="projection-card">
@@ -996,6 +1096,8 @@
                         <span class="qb-name">${qb.name} (${qb.team})</span>
                         <span class="opponent">vs ${opponentTeam}</span>
                     </div>
+                    
+                    ${matchupGradeHTML}
                     
                     <div class="projection-stats">
                         <div class="stat-card">
@@ -1008,7 +1110,7 @@
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${projection.estimatedDropbacks}</div>
-                            <div class="stat-label">Estimated Dropbacks</div>
+                            <div class="stat-label">Projected Dropbacks</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${((projection.totalMultiplier - 1) * 100).toFixed(1)}%</div>
@@ -1033,15 +1135,19 @@
                             </div>
                             <div class="breakdown-item">
                                 <div class="breakdown-value">${((projection.adjustmentBreakdown.spreadAdj - 1) * 100).toFixed(1)}%</div>
-                                <div class="breakdown-label">Spread Adj</div>
+                                <div class="breakdown-label">Spread Impact</div>
                             </div>
                             <div class="breakdown-item">
                                 <div class="breakdown-value">${((projection.adjustmentBreakdown.totalAdj - 1) * 100).toFixed(1)}%</div>
-                                <div class="breakdown-label">Total Adj</div>
+                                <div class="breakdown-label">Total Impact</div>
                             </div>
                             <div class="breakdown-item">
                                 <div class="breakdown-value">${((projection.adjustmentBreakdown.defenseAdj - 1) * 100).toFixed(1)}%</div>
-                                <div class="breakdown-label">Defense Adj</div>
+                                <div class="breakdown-label">Defense Impact</div>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="breakdown-value">${((projection.adjustmentBreakdown.dropbackAdj - 1) * 100).toFixed(1)}%</div>
+                                <div class="breakdown-label">Volume Impact</div>
                             </div>
                         </div>
                     </div>
@@ -1051,7 +1157,7 @@
             `;
         }
 
-        // CSV Upload and Processing
+        // CSV Upload and Processing (keeping existing functions)
         function handleCSVUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1207,7 +1313,7 @@
             return weekData ? weekData.points : null;
         }
 
-        // Enhanced Season Audit with Defense Data
+        // Enhanced Season Audit with AGGRESSIVE Defense Data
         async function runSeasonAudit() {
             if (csvData.length === 0 || qbData.length === 0 || Object.keys(gameLogData).length === 0) {
                 showAuditStatus('❌ Please upload both CSV files and ensure QB data is loaded', 'error');
@@ -1271,7 +1377,7 @@
                             total: isNaN(total) ? null : total
                         };
 
-                        // Use enhanced projection with defense data
+                        // Use enhanced AGGRESSIVE projection with defense data
                         const projection = projector.calculateProjection(qb, gameContext, opponentDefense);
                         
                         if (projection && typeof week === 'number') {
@@ -1290,7 +1396,8 @@
                                     actual: actualFP,
                                     diff: actualFP - projectedFP,
                                     accuracy: Math.max(0, 1 - (Math.abs(actualFP - projectedFP) / Math.max(actualFP, 1))),
-                                    defenseUsed: !!opponentDefense
+                                    defenseUsed: !!opponentDefense,
+                                    matchupGrade: projection.matchupGrade
                                 });
 
                                 totalProjected += projectedFP;
@@ -1351,7 +1458,7 @@
 
             let html = `
                 <div class="audit-summary">
-                    <h2>📊 2024 NFL Season Audit Summary (Enhanced with Defense Data)</h2>
+                    <h2>📊 2024 NFL Season Audit Summary (AGGRESSIVE Matchup-Based Model)</h2>
                     <div class="breakdown-grid" style="margin-top: 20px;">
                         <div class="breakdown-item">
                             <div class="breakdown-value">${results.length}</div>
@@ -1432,10 +1539,15 @@
                     const accuracyColor = week.accuracy > 0.8 ? '#10b981' : week.accuracy > 0.6 ? '#f59e0b' : '#dc2626';
                     const homeAway = week.isHome ? 'vs' : '@';
                     const defenseIcon = week.defenseUsed ? '🛡️' : '';
+                    const gradeColor = week.matchupGrade ? week.matchupGrade.color : '';
+                    const grade = week.matchupGrade ? week.matchupGrade.grade : 'N/A';
                     
                     html += `
                         <div class="week-item">
-                            <div style="font-weight: 600; margin-bottom: 5px;">Week ${week.week} ${defenseIcon}</div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">
+                                Week ${week.week} ${defenseIcon}
+                                <span class="${gradeColor}" style="font-size: 0.8rem; margin-left: 5px;">${grade}</span>
+                            </div>
                             <div style="font-size: 0.8rem; margin-bottom: 3px;">${homeAway} ${week.opponent}</div>
                             <div style="font-size: 0.7rem; margin-bottom: 3px;">${week.date}</div>
                             <div class="week-projected">P: ${week.projected.toFixed(1)}</div>
@@ -1457,7 +1569,7 @@
             });
 
             auditResultsDiv.innerHTML = html;
-            showAuditStatus(`🎉 Enhanced audit completed! Analyzed ${results.length} QBs across ${totalGames} games with defense-adjusted projections (${(avgDefenseUsage * 100).toFixed(0)}% coverage).`, 'success');
+            showAuditStatus(`🎉 AGGRESSIVE audit completed! Analyzed ${results.length} QBs across ${totalGames} games with matchup-based projections (${(avgDefenseUsage * 100).toFixed(0)}% coverage).`, 'success');
         }
 
         function showStatus(message, type) {
