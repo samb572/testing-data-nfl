@@ -312,6 +312,20 @@
         .grade-D { color: #ef4444; }
         .grade-F { color: #dc2626; }
 
+        .tier-display {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .tier-elite { border-left: 4px solid #059669; color: #059669; }
+        .tier-top { border-left: 4px solid #10b981; color: #10b981; }
+        .tier-mid { border-left: 4px solid #f59e0b; color: #f59e0b; }
+        .tier-low { border-left: 4px solid #ef4444; color: #ef4444; }
+
         .audit-summary {
             background: linear-gradient(135deg, #fef3c7 0%, #fef3c7 100%);
             border-radius: 15px;
@@ -476,7 +490,7 @@
     <div class="container">
         <div class="header">
             <h1>🏈 Advanced QB Fantasy Projections</h1>
-            <p>Powered by Coverage Analysis, Game Script Intelligence &amp; Defensive Tendencies</p>
+            <p>Calibrated for Realistic Weekly Projections with Matchup Analysis</p>
         </div>
 
         <div class="nav-tabs">
@@ -604,10 +618,10 @@
             }
         });
 
-        // ENHANCED QB Projector with AGGRESSIVE matchup adjustments
+        // CALIBRATED QB Projector with REALISTIC baseline expectations
         class QBProjector {
             constructor() {
-                // MUCH MORE AGGRESSIVE game script adjustments
+                // CALIBRATED game script adjustments (still meaningful but not extreme)
                 this.gameScriptAdjustments = {
                     spread: {
                         bigFavorite: 0.75,    // -10 or more (25% reduction!)
@@ -627,9 +641,17 @@
                     }
                 };
 
-                // AGGRESSIVE defense-based adjustments
+                // REALISTIC baseline FP/DB targets by tier
+                this.baselineTargets = {
+                    elite: 0.52,      // Elite QBs: ~22 FP with 42 dropbacks
+                    top: 0.48,        // Top QBs: ~20 FP with 42 dropbacks  
+                    good: 0.43,       // Good QBs: ~18 FP with 42 dropbacks
+                    mid: 0.38,        // Mid QBs: ~16 FP with 42 dropbacks
+                    low: 0.33         // Low QBs: ~14 FP with 42 dropbacks
+                };
+
+                // Defense multipliers (kept aggressive for differentiation)
                 this.defenseMultipliers = {
-                    // Based on overall defense ranking (1-32)
                     elite: 0.70,      // Top 5 defenses (30% reduction!)
                     good: 0.85,       // 6-12 defenses (15% reduction)
                     average: 1.0,     // 13-20 defenses
@@ -640,8 +662,8 @@
                 // Coverage-specific multipliers
                 this.coverageMultipliers = {
                     manCoverage: {
-                        elite: 0.80,      // Great man coverage
-                        poor: 1.25       // Poor man coverage
+                        elite: 0.80,
+                        poor: 1.25
                     },
                     cover2: {
                         elite: 0.85,
@@ -652,15 +674,51 @@
                         poor: 1.20
                     },
                     pressure: {
-                        heavy: 0.75,      // High pressure (25% reduction)
-                        light: 1.20       // Low pressure (20% boost)
+                        heavy: 0.75,
+                        light: 1.20
                     }
+                };
+            }
+
+            // NEW: Determine QB tier and normalize to realistic baseline
+            categorizeQB(qb) {
+                const fpPerDB = qb.weighted_fp_per_db || 0.4;
+                const totalDropbacks = qb.total_dropbacks || 500;
+                
+                // Determine tier based on original FP/DB
+                let tier, normalizedFPPerDB;
+                
+                if (fpPerDB >= 0.55) {
+                    tier = 'elite';
+                    normalizedFPPerDB = this.baselineTargets.elite;
+                } else if (fpPerDB >= 0.50) {
+                    tier = 'top';
+                    normalizedFPPerDB = this.baselineTargets.top;
+                } else if (fpPerDB >= 0.45) {
+                    tier = 'good';
+                    normalizedFPPerDB = this.baselineTargets.good;
+                } else if (fpPerDB >= 0.40) {
+                    tier = 'mid';
+                    normalizedFPPerDB = this.baselineTargets.mid;
+                } else {
+                    tier = 'low';
+                    normalizedFPPerDB = this.baselineTargets.low;
+                }
+
+                return {
+                    tier,
+                    normalizedFPPerDB,
+                    originalFPPerDB: fpPerDB,
+                    dropbacks: totalDropbacks
                 };
             }
             
             calculateProjection(qb, gameContext, opponentDefense = null) {
                 try {
-                    const baseFPPerDB = qb.weighted_fp_per_db || 0.4;
+                    // Get normalized QB baseline
+                    const qbProfile = this.categorizeQB(qb);
+                    const baseFPPerDB = qbProfile.normalizedFPPerDB;
+                    
                     const seasonDropbacks = qb.total_dropbacks || 500;
                     let estimatedDropbacks = Math.round(seasonDropbacks / 17);
                     
@@ -668,7 +726,7 @@
                     let defenseMultiplier = 1.0;
                     let dropbackAdjustment = 1.0;
                     
-                    // AGGRESSIVE Spread adjustments
+                    // Game script adjustments
                     if (gameContext.spread !== null) {
                         const spread = gameContext.spread;
                         if (spread <= -10) {
@@ -692,7 +750,7 @@
                         }
                     }
                     
-                    // AGGRESSIVE Total adjustments
+                    // Total adjustments
                     if (gameContext.total !== null) {
                         const total = gameContext.total;
                         if (total < 40) gameScriptMultiplier *= this.gameScriptAdjustments.total.veryLow;
@@ -702,7 +760,7 @@
                         else gameScriptMultiplier *= this.gameScriptAdjustments.total.veryHigh;
                     }
 
-                    // AGGRESSIVE Defense-specific adjustments
+                    // Defense-specific adjustments
                     let defenseInsights = null;
                     if (opponentDefense) {
                         const defenseAnalysis = this.analyzeDefenseAggressive(opponentDefense);
@@ -722,6 +780,8 @@
                     
                     return {
                         baseFPPerDB: baseFPPerDB,
+                        originalFPPerDB: qbProfile.originalFPPerDB,
+                        qbTier: qbProfile.tier,
                         adjustedFPPerDB: adjustedFPPerDB,
                         estimatedDropbacks: estimatedDropbacks,
                         totalProjectedFP: totalProjectedFP,
@@ -789,7 +849,7 @@
                     insights.strengths.push('Strong Pass Defense');
                 }
 
-                // AGGRESSIVE man coverage analysis
+                // Coverage-specific analysis (kept same)
                 const manRating = defense.man_rating || 95;
                 const manPct = defense.man_pct || 50;
                 
@@ -801,7 +861,7 @@
                     insights.strengths.push(`Lockdown Man Coverage (${manRating.toFixed(1)} rating)`);
                 }
 
-                // AGGRESSIVE coverage-specific weaknesses
+                // Coverage-specific weaknesses
                 const cover2Rating = defense.cover_2_rating || 95;
                 const cover2Pct = defense.cover_2_pct || 15;
                 if (cover2Rating > 105 && cover2Pct > 12) {
@@ -816,7 +876,7 @@
                     insights.weaknesses.push(`Cover 3 WEAKNESS (${cover3Rating.toFixed(1)} rating, ${cover3Pct.toFixed(1)}% usage)`);
                 }
 
-                // AGGRESSIVE pressure analysis
+                // Pressure analysis
                 const sackPct = defense.overall_sack_pct || defense.man_sack_pct || 6;
                 if (sackPct > 9) {
                     multiplier *= this.coverageMultipliers.pressure.heavy;
@@ -826,7 +886,7 @@
                     insights.weaknesses.push(`NO Pass Rush (${sackPct.toFixed(1)}% sack rate)`);
                 }
 
-                // AGGRESSIVE yards per attempt analysis
+                // Yards per attempt analysis
                 const ypaAllowed = defense.overall_ypa || defense.man_yards_per_attempt || 7.0;
                 if (ypaAllowed > 8.0) {
                     multiplier *= 1.25;
@@ -857,6 +917,17 @@
                 if (totalMultiplier >= 0.95) return { grade: 'C', color: 'grade-C', description: 'Average Matchup' };
                 if (totalMultiplier >= 0.85) return { grade: 'D', color: 'grade-D', description: 'Tough Matchup' };
                 return { grade: 'F', color: 'grade-F', description: 'AVOID' };
+            }
+
+            getTierInfo(tier) {
+                const tierInfo = {
+                    elite: { display: 'Elite Tier (Top 3)', class: 'tier-elite' },
+                    top: { display: 'Top Tier (4-8)', class: 'tier-top' },
+                    good: { display: 'Good Tier (9-15)', class: 'tier-good' },
+                    mid: { display: 'Mid Tier (16-24)', class: 'tier-mid' },
+                    low: { display: 'Low Tier (25+)', class: 'tier-low' }
+                };
+                return tierInfo[tier] || { display: 'Unknown Tier', class: 'tier-mid' };
             }
             
             getSpreadMultiplier(spread) {
@@ -958,9 +1029,12 @@
             select.innerHTML = '<option value="">Select a quarterback</option>';
 
             qbData.forEach((qb) => {
+                const qbProfile = projector.categorizeQB(qb);
+                const tierInfo = projector.getTierInfo(qbProfile.tier);
+                
                 const option = document.createElement('option');
                 option.value = qb.name;
-                option.textContent = `${qb.name} (${qb.team}) - ${qb.weighted_fp_per_db.toFixed(3)} FP/DB`;
+                option.textContent = `${qb.name} (${qb.team}) - ${tierInfo.display}`;
                 select.appendChild(option);
             });
         }
@@ -1044,6 +1118,18 @@
             const opponentName = opponentDefense ? opponentDefense.team_name : gameContext.opponent || 'Unknown';
             const opponentTeam = opponentDefense ? opponentDefense.team : gameContext.opponent || 'UNK';
             
+            // QB Tier display
+            const tierInfo = projector.getTierInfo(projection.qbTier);
+            const tierHTML = `
+                <div class="tier-display ${tierInfo.class}">
+                    ${tierInfo.display}
+                    <div style="font-size: 0.8rem; margin-top: 5px;">
+                        Baseline: ${projection.baseFPPerDB.toFixed(3)} FP/DB 
+                        (was ${projection.originalFPPerDB.toFixed(3)})
+                    </div>
+                </div>
+            `;
+
             let defenseInsightsHTML = '';
             if (projection.defenseInsights) {
                 const insights = projection.defenseInsights;
@@ -1097,6 +1183,7 @@
                         <span class="opponent">vs ${opponentTeam}</span>
                     </div>
                     
+                    ${tierHTML}
                     ${matchupGradeHTML}
                     
                     <div class="projection-stats">
@@ -1123,7 +1210,7 @@
                         <div class="breakdown-grid">
                             <div class="breakdown-item">
                                 <div class="breakdown-value">${projection.baseFPPerDB.toFixed(3)}</div>
-                                <div class="breakdown-label">Base FP/DB</div>
+                                <div class="breakdown-label">Normalized Base FP/DB</div>
                             </div>
                             <div class="breakdown-item">
                                 <div class="breakdown-value">${gameContext.spread !== null ? gameContext.spread : 'N/A'}</div>
@@ -1157,7 +1244,7 @@
             `;
         }
 
-        // CSV Upload and Processing (keeping existing functions)
+        // CSV Upload and Processing (rest of the functions remain the same)
         function handleCSVUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1313,7 +1400,7 @@
             return weekData ? weekData.points : null;
         }
 
-        // Enhanced Season Audit with AGGRESSIVE Defense Data
+        // Enhanced Season Audit with CALIBRATED projections
         async function runSeasonAudit() {
             if (csvData.length === 0 || qbData.length === 0 || Object.keys(gameLogData).length === 0) {
                 showAuditStatus('❌ Please upload both CSV files and ensure QB data is loaded', 'error');
@@ -1377,7 +1464,7 @@
                             total: isNaN(total) ? null : total
                         };
 
-                        // Use enhanced AGGRESSIVE projection with defense data
+                        // Use CALIBRATED projection with defense data
                         const projection = projector.calculateProjection(qb, gameContext, opponentDefense);
                         
                         if (projection && typeof week === 'number') {
@@ -1458,7 +1545,7 @@
 
             let html = `
                 <div class="audit-summary">
-                    <h2>📊 2024 NFL Season Audit Summary (AGGRESSIVE Matchup-Based Model)</h2>
+                    <h2>📊 2024 NFL Season Audit Summary (CALIBRATED Baseline Model)</h2>
                     <div class="breakdown-grid" style="margin-top: 20px;">
                         <div class="breakdown-item">
                             <div class="breakdown-value">${results.length}</div>
@@ -1569,7 +1656,7 @@
             });
 
             auditResultsDiv.innerHTML = html;
-            showAuditStatus(`🎉 AGGRESSIVE audit completed! Analyzed ${results.length} QBs across ${totalGames} games with matchup-based projections (${(avgDefenseUsage * 100).toFixed(0)}% coverage).`, 'success');
+            showAuditStatus(`🎉 CALIBRATED audit completed! Analyzed ${results.length} QBs with normalized baselines for realistic projections.`, 'success');
         }
 
         function showStatus(message, type) {
