@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced QB Fantasy Projections</title>
+    <title>Data-Driven QB Fantasy Projections</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5"></script>
@@ -166,29 +166,6 @@
             border-left: 5px solid #0ea5e9;
         }
 
-        .boom-card {
-            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
-            border-left: 5px solid #f59e0b;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
-        }
-
-        .nuclear-card {
-            background: linear-gradient(135deg, #fecaca 0%, #ef4444 100%);
-            border-left: 5px solid #dc2626;
-            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .bust-card {
-            background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%);
-            border-left: 5px solid #6b7280;
-        }
-
         .projection-header {
             display: flex;
             justify-content: space-between;
@@ -213,7 +190,7 @@
 
         .projection-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -237,107 +214,6 @@
             font-size: 0.9rem;
             color: #64748b;
             font-weight: 500;
-        }
-
-        .boom-alert {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-            font-weight: 700;
-            font-size: 1.2rem;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
-            animation: glow 2s infinite alternate;
-        }
-
-        .nuclear-alert {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            animation: nuclearGlow 1.5s infinite alternate;
-        }
-
-        @keyframes glow {
-            from { box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
-            to { box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
-        }
-
-        @keyframes nuclearGlow {
-            from { box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); }
-            to { box-shadow: 0 0 40px rgba(239, 68, 68, 1); }
-        }
-
-        .range-display {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .range-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 15px;
-        }
-
-        .range-values {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .range-item {
-            text-align: center;
-        }
-
-        .range-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .range-floor { color: #ef4444; }
-        .range-projection { color: #0ea5e9; }
-        .range-ceiling { color: #059669; }
-
-        .range-label {
-            font-size: 0.9rem;
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        .boom-factors {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            border-radius: 12px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
-        .boom-title {
-            font-weight: 700;
-            color: #92400e;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-
-        .boom-factor {
-            background: rgba(251, 191, 36, 0.3);
-            color: #92400e;
-            padding: 6px 12px;
-            border-radius: 6px;
-            margin: 4px;
-            display: inline-block;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .nuclear-factor {
-            background: rgba(239, 68, 68, 0.2);
-            color: #dc2626;
-            border: 1px solid #ef4444;
         }
 
         .breakdown-section {
@@ -393,9 +269,9 @@
             font-size: 1.1rem;
         }
 
-        .defense-weakness {
-            background: rgba(239, 68, 68, 0.1);
-            color: #dc2626;
+        .defense-stat {
+            background: rgba(245, 158, 11, 0.1);
+            color: #92400e;
             padding: 8px 12px;
             border-radius: 6px;
             margin: 5px;
@@ -403,53 +279,6 @@
             font-size: 0.9rem;
             font-weight: 500;
         }
-
-        .defense-strength {
-            background: rgba(34, 197, 94, 0.1);
-            color: #059669;
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin: 5px;
-            display: inline-block;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .matchup-grade {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: center;
-            border: 2px solid #e5e7eb;
-        }
-
-        .grade-display {
-            font-size: 3rem;
-            font-weight: 900;
-            margin-bottom: 10px;
-        }
-
-        .grade-A { color: #059669; }
-        .grade-B { color: #10b981; }
-        .grade-C { color: #f59e0b; }
-        .grade-D { color: #ef4444; }
-        .grade-F { color: #dc2626; }
-
-        .tier-display {
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .tier-elite { border-left: 4px solid #059669; color: #059669; }
-        .tier-top { border-left: 4px solid #10b981; color: #10b981; }
-        .tier-good { border-left: 4px solid #f59e0b; color: #f59e0b; }
-        .tier-mid { border-left: 4px solid #ef4444; color: #ef4444; }
-        .tier-low { border-left: 4px solid #ef4444; color: #ef4444; }
 
         .csv-info {
             background: #f0f9ff;
@@ -521,29 +350,7 @@
             transform: scale(1.05);
         }
 
-        @media (max-width: 968px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .github-link {
-                position: static;
-                display: block;
-                margin: 10px auto;
-                width: fit-content;
-            }
-
-            .range-values {
-                flex-direction: column;
-                gap: 15px;
-            }
-        }
-
-        /* Additional styles for audit results */
+        /* Audit styles */
         .audit-summary {
             background: linear-gradient(135deg, #fef3c7 0%, #fef3c7 100%);
             border-radius: 15px;
@@ -611,6 +418,23 @@
             color: #6b7280;
             font-size: 0.8rem;
         }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .github-link {
+                position: static;
+                display: block;
+                margin: 10px auto;
+                width: fit-content;
+            }
+        }
     </style>
 </head>
 <body>
@@ -620,8 +444,8 @@
 
     <div class="container">
         <div class="header">
-            <h1>🏈 Advanced QB Fantasy Projections</h1>
-            <p>Aggressive Boom Week Detection with Nuclear Matchup Analysis</p>
+            <h1>🏈 Data-Driven QB Projections</h1>
+            <p>Pure Database Stats - No Artificial Multipliers</p>
         </div>
 
         <div class="nav-tabs">
@@ -749,166 +573,69 @@
             }
         });
 
-        // COMPLETELY REVAMPED QB Projector with AGGRESSIVE boom detection
+        // COMPLETELY REBUILT - Pure Database-Driven QB Projector
         class QBProjector {
             constructor() {
-                // Base game script adjustments (more moderate)
+                // MINIMAL adjustments based on realistic game script changes
                 this.gameScriptAdjustments = {
+                    // Spread adjustments (very conservative)
                     spread: {
-                        bigFavorite: 0.82,    // -10 or more
-                        favorite: 0.92,       // -7 to -9.5
-                        smallFavorite: 0.96,  // -3 to -6.5
-                        pickEm: 1.0,          // -2.5 to +2.5
-                        smallUnderdog: 1.06,  // +3 to +6.5
-                        underdog: 1.15,       // +7 to +9.5
-                        bigUnderdog: 1.25     // +10 or more
+                        bigFavorite: 0.92,    // -10+ (8% reduction in volume)
+                        favorite: 0.96,       // -7 to -9.5 (4% reduction)
+                        smallFavorite: 0.98,  // -3 to -6.5 (2% reduction)
+                        pickEm: 1.0,          // -2.5 to +2.5 (baseline)
+                        smallUnderdog: 1.02,  // +3 to +6.5 (2% boost)
+                        underdog: 1.05,       // +7 to +9.5 (5% boost)
+                        bigUnderdog: 1.08     // +10+ (8% boost)
                     },
+                    // Game total adjustments (very conservative)
                     total: {
-                        veryLow: 0.78,    // Under 40
-                        low: 0.90,        // 40-43.5
-                        average: 1.0,     // 44-47.5
-                        high: 1.12,       // 48-51.5
-                        veryHigh: 1.25    // Over 52
+                        veryLow: 0.88,    // Under 40 (12% reduction)
+                        low: 0.94,        // 40-43.5 (6% reduction)
+                        average: 1.0,     // 44-47.5 (baseline)
+                        high: 1.04,       // 48-51.5 (4% boost)
+                        veryHigh: 1.08    // 52+ (8% boost)
                     }
-                };
-
-                // BOOM WEEK CRITERIA - Much more realistic and aggressive
-                this.boomCriteria = {
-                    // Game environment boom factors
-                    gameEnvironment: {
-                        highTotal: { threshold: 48.5, multiplier: 1.40 },      // 48.5+ total
-                        ultraHighTotal: { threshold: 53, multiplier: 1.70 },   // 53+ total
-                        moderateUnderdog: { threshold: 3.5, multiplier: 1.25 }, // +3.5 or more
-                        bigUnderdog: { threshold: 7.5, multiplier: 1.50 },     // +7.5 or more
-                        massiveUnderdog: { threshold: 13, multiplier: 1.80 },   // +13 or more (desperate)
-                        domeGame: { multiplier: 1.15 },                        // Indoor/dome games
-                        primetime: { multiplier: 1.10 }                        // MNF/SNF/TNF
-                    },
-                    
-                    // Defense-based boom factors  
-                    defenseWeakness: {
-                        bottomFive: { multiplier: 1.60 },          // Bottom 5 overall defense
-                        terriblePass: { multiplier: 1.45 },        // 110+ passer rating allowed
-                        noPassRush: { multiplier: 1.30 },          // <4% sack rate
-                        badCoverage: { multiplier: 1.35 },         // Poor man/zone coverage
-                        injuredSecondary: { multiplier: 1.25 },    // Missing key DBs
-                        homeRunAllowed: { multiplier: 1.20 }       // 8.5+ YPA allowed
-                    },
-
-                    // QB-specific boom factors
-                    qbFactors: {
-                        eliteInBoomSpot: { multiplier: 2.20 },     // Elite QB in perfect storm
-                        topTierCeiling: { multiplier: 1.90 },      // Top QB in great spot
-                        revengeGame: { multiplier: 1.15 },         // Former team matchup
-                        mustWin: { multiplier: 1.20 },             // Playoff implications
-                        hotStreak: { multiplier: 1.10 }            // 3+ straight good games
-                    }
-                };
-
-                // NUCLEAR MATCHUP detection (ultra rare but explosive)
-                this.nuclearThresholds = {
-                    massiveTotal: 56,           // 56+ point total
-                    desperateSpread: 14,        // +14 or worse underdog
-                    worstDefense: 32,           // 32nd ranked defense
-                    perfectStorm: 3.5           // 3.5+ boom factors combined
-                };
-
-                // Baseline FP/DB targets 
-                this.baselineTargets = {
-                    elite: 0.58,      // Elite: 24+ FP baseline
-                    top: 0.53,        // Top: 22+ FP baseline
-                    good: 0.47,       // Good: 20+ FP baseline
-                    mid: 0.41,        // Mid: 17+ FP baseline
-                    low: 0.36         // Low: 15+ FP baseline
-                };
-
-                // Boom multipliers by tier (how much they can explode)
-                this.tierBoomPotential = {
-                    elite: 2.50,      // Elite can go 2.5x in perfect storm
-                    top: 2.20,        // Top can go 2.2x
-                    good: 1.90,       // Good can go 1.9x
-                    mid: 1.60,        // Mid more limited ceiling
-                    low: 1.40         // Low tier capped
-                };
-
-                // Bust protection by tier
-                this.tierBustFloor = {
-                    elite: 0.70,      // Elite rarely bust completely
-                    top: 0.65,        // Top have decent floor
-                    good: 0.60,       // Good can struggle
-                    mid: 0.55,        // Mid quite volatile
-                    low: 0.50         // Low can really bust
-                };
-            }
-
-            categorizeQB(qb) {
-                const fpPerDB = qb.weighted_fp_per_db || 0.4;
-                const totalDropbacks = qb.total_dropbacks || 500;
-                
-                let tier, normalizedFPPerDB;
-                
-                if (fpPerDB >= 0.55) {
-                    tier = 'elite';
-                    normalizedFPPerDB = this.baselineTargets.elite;
-                } else if (fpPerDB >= 0.50) {
-                    tier = 'top';
-                    normalizedFPPerDB = this.baselineTargets.top;
-                } else if (fpPerDB >= 0.45) {
-                    tier = 'good';
-                    normalizedFPPerDB = this.baselineTargets.good;
-                } else if (fpPerDB >= 0.40) {
-                    tier = 'mid';
-                    normalizedFPPerDB = this.baselineTargets.mid;
-                } else {
-                    tier = 'low';
-                    normalizedFPPerDB = this.baselineTargets.low;
-                }
-
-                return {
-                    tier,
-                    normalizedFPPerDB,
-                    originalFPPerDB: fpPerDB,
-                    dropbacks: totalDropbacks
                 };
             }
             
             calculateProjection(qb, gameContext, opponentDefense = null) {
                 try {
-                    const qbProfile = this.categorizeQB(qb);
-                    const baseFPPerDB = qbProfile.normalizedFPPerDB;
-                    
+                    // Use ACTUAL database stats - no artificial multipliers
+                    const baseFPPerDB = qb.weighted_fp_per_db || 0.4;
                     const seasonDropbacks = qb.total_dropbacks || 500;
-                    let estimatedDropbacks = Math.round(seasonDropbacks / 17);
+                    let estimatedDropbacks = Math.round(seasonDropbacks / 17); // Average per game
                     
-                    // Calculate base game script multipliers
+                    // Start with pure database stats
                     let gameScriptMultiplier = 1.0;
+                    let defenseMultiplier = 1.0;
                     let dropbackAdjustment = 1.0;
                     
-                    // Spread adjustments
+                    // MINIMAL spread adjustments (just game script changes)
                     if (gameContext.spread !== null) {
                         const spread = gameContext.spread;
                         if (spread <= -10) {
                             gameScriptMultiplier *= this.gameScriptAdjustments.spread.bigFavorite;
-                            dropbackAdjustment *= 0.88;
+                            dropbackAdjustment *= 0.95; // Slightly fewer dropbacks
                         }
                         else if (spread <= -7) gameScriptMultiplier *= this.gameScriptAdjustments.spread.favorite;
                         else if (spread <= -3) gameScriptMultiplier *= this.gameScriptAdjustments.spread.smallFavorite;
                         else if (spread <= 2.5) gameScriptMultiplier *= this.gameScriptAdjustments.spread.pickEm;
                         else if (spread <= 6.5) {
                             gameScriptMultiplier *= this.gameScriptAdjustments.spread.smallUnderdog;
-                            dropbackAdjustment *= 1.05;
+                            dropbackAdjustment *= 1.02; // Slightly more dropbacks
                         }
                         else if (spread <= 9.5) {
                             gameScriptMultiplier *= this.gameScriptAdjustments.spread.underdog;
-                            dropbackAdjustment *= 1.12;
+                            dropbackAdjustment *= 1.04;
                         }
                         else {
                             gameScriptMultiplier *= this.gameScriptAdjustments.spread.bigUnderdog;
-                            dropbackAdjustment *= 1.18;
+                            dropbackAdjustment *= 1.06; // More dropbacks when behind
                         }
                     }
                     
-                    // Total adjustments
+                    // MINIMAL total adjustments (just pace changes)
                     if (gameContext.total !== null) {
                         const total = gameContext.total;
                         if (total < 40) gameScriptMultiplier *= this.gameScriptAdjustments.total.veryLow;
@@ -918,59 +645,35 @@
                         else gameScriptMultiplier *= this.gameScriptAdjustments.total.veryHigh;
                     }
 
-                    // NEW: AGGRESSIVE BOOM DETECTION
-                    const boomAnalysis = this.analyzeBoomPotential(qbProfile, gameContext, opponentDefense);
+                    // Defense analysis using ONLY database stats
+                    let defenseInsights = null;
+                    if (opponentDefense) {
+                        const defenseAnalysis = this.analyzeDefenseByStats(opponentDefense);
+                        defenseMultiplier = defenseAnalysis.multiplier;
+                        defenseInsights = defenseAnalysis.insights;
+                    }
                     
-                    // Apply dropback adjustment
+                    // Apply adjustments
                     estimatedDropbacks = Math.round(estimatedDropbacks * dropbackAdjustment);
-                    
-                    // Calculate base projection
-                    const defenseMultiplier = boomAnalysis.defenseMultiplier;
                     const totalMultiplier = gameScriptMultiplier * defenseMultiplier;
                     const adjustedFPPerDB = baseFPPerDB * totalMultiplier;
-                    let baseProjection = adjustedFPPerDB * estimatedDropbacks;
-                    
-                    // Apply BOOM multiplier to base projection
-                    const finalProjection = baseProjection * boomAnalysis.boomMultiplier;
-                    
-                    // Calculate ceiling and floor
-                    const maxCeiling = baseProjection * this.tierBoomPotential[qbProfile.tier] * boomAnalysis.boomMultiplier;
-                    const minFloor = baseProjection * this.tierBustFloor[qbProfile.tier];
-                    
-                    const matchupGrade = this.calculateMatchupGrade(
-                        totalMultiplier, 
-                        boomAnalysis.boomScore,
-                        boomAnalysis.isNuclear
-                    );
+                    const totalProjectedFP = adjustedFPPerDB * estimatedDropbacks;
                     
                     return {
                         baseFPPerDB: baseFPPerDB,
-                        originalFPPerDB: qbProfile.originalFPPerDB,
-                        qbTier: qbProfile.tier,
                         adjustedFPPerDB: adjustedFPPerDB,
                         estimatedDropbacks: estimatedDropbacks,
-                        totalProjectedFP: finalProjection,
-                        baseProjection: baseProjection,
-                        ceiling: maxCeiling,
-                        floor: minFloor,
-                        boomScore: boomAnalysis.boomScore,
-                        boomMultiplier: boomAnalysis.boomMultiplier,
-                        boomFactors: boomAnalysis.boomFactors,
-                        isBoomSpot: boomAnalysis.isBoomSpot,
-                        isNuclear: boomAnalysis.isNuclear,
-                        isBustSpot: totalMultiplier <= 0.85,
+                        totalProjectedFP: totalProjectedFP,
                         gameScriptMultiplier: gameScriptMultiplier,
                         defenseMultiplier: defenseMultiplier,
                         totalMultiplier: totalMultiplier,
                         dropbackAdjustment: dropbackAdjustment,
-                        matchupGrade: matchupGrade,
-                        defenseInsights: boomAnalysis.defenseInsights,
+                        defenseInsights: defenseInsights,
                         adjustmentBreakdown: {
                             spreadAdj: gameContext.spread !== null ? this.getSpreadMultiplier(gameContext.spread) : 1.0,
                             totalAdj: gameContext.total !== null ? this.getTotalMultiplier(gameContext.total) : 1.0,
                             defenseAdj: defenseMultiplier,
-                            dropbackAdj: dropbackAdjustment,
-                            boomAdj: boomAnalysis.boomMultiplier
+                            dropbackAdj: dropbackAdjustment
                         }
                     };
                 } catch (error) {
@@ -979,220 +682,86 @@
                 }
             }
 
-            // NEW: COMPREHENSIVE BOOM ANALYSIS
-            analyzeBoomPotential(qbProfile, gameContext, opponentDefense) {
-                let boomScore = 0;
-                let boomMultiplier = 1.0;
-                let defenseMultiplier = 1.0;
-                const boomFactors = [];
-                const insights = {
-                    weaknesses: [],
-                    strengths: [],
-                    coverageNotes: [],
-                    pressureNotes: []
-                };
-
-                // GAME ENVIRONMENT BOOM FACTORS
-                if (gameContext.total !== null) {
-                    const total = gameContext.total;
-                    
-                    if (total >= this.nuclearThresholds.massiveTotal) {
-                        boomScore += 2.0;
-                        boomMultiplier *= this.boomCriteria.gameEnvironment.ultraHighTotal.multiplier;
-                        boomFactors.push(`🔥 NUCLEAR TOTAL (${total})`);
-                    } else if (total >= this.boomCriteria.gameEnvironment.ultraHighTotal.threshold) {
-                        boomScore += 1.5;
-                        boomMultiplier *= this.boomCriteria.gameEnvironment.ultraHighTotal.multiplier;
-                        boomFactors.push(`🚀 Ultra High Total (${total})`);
-                    } else if (total >= this.boomCriteria.gameEnvironment.highTotal.threshold) {
-                        boomScore += 1.0;
-                        boomMultiplier *= this.boomCriteria.gameEnvironment.highTotal.multiplier;
-                        boomFactors.push(`⬆️ High Total (${total})`);
-                    }
-                }
-
-                // SPREAD-BASED BOOM FACTORS (Underdog = volume)
-                if (gameContext.spread !== null) {
-                    const spread = gameContext.spread;
-                    
-                    if (spread >= this.nuclearThresholds.desperateSpread) {
-                        boomScore += 2.0;
-                        boomMultiplier *= this.boomCriteria.gameEnvironment.massiveUnderdog.multiplier;
-                        boomFactors.push(`🔥 DESPERATE UNDERDOG (+${spread})`);
-                    } else if (spread >= this.boomCriteria.gameEnvironment.bigUnderdog.threshold) {
-                        boomScore += 1.5;
-                        boomMultiplier *= this.boomCriteria.gameEnvironment.bigUnderdog.multiplier;
-                        boomFactors.push(`📈 Big Underdog (+${spread})`);
-                    } else if (spread >= this.boomCriteria.gameEnvironment.moderateUnderdog.threshold) {
-                        boomScore += 0.8;
-                        boomMultiplier *= this.boomCriteria.gameEnvironment.moderateUnderdog.multiplier;
-                        boomFactors.push(`📊 Moderate Underdog (+${spread})`);
-                    }
-                }
-
-                // DEFENSE BOOM ANALYSIS
-                if (opponentDefense) {
-                    const defenseAnalysis = this.analyzeDefensiveWeakness(opponentDefense);
-                    defenseMultiplier = defenseAnalysis.multiplier;
-                    boomScore += defenseAnalysis.boomScore;
-                    boomMultiplier *= defenseAnalysis.boomMultiplier;
-                    boomFactors.push(...defenseAnalysis.boomFactors);
-                    Object.assign(insights, defenseAnalysis.insights);
-                }
-
-                // QB TIER BOOM BONUS
-                if (qbProfile.tier === 'elite' && boomScore >= 2.0) {
-                    boomScore += 1.0;
-                    boomMultiplier *= this.boomCriteria.qbFactors.eliteInBoomSpot.multiplier;
-                    boomFactors.push('⭐ ELITE QB IN BOOM SPOT');
-                } else if (qbProfile.tier === 'top' && boomScore >= 1.5) {
-                    boomScore += 0.5;
-                    boomMultiplier *= this.boomCriteria.qbFactors.topTierCeiling.multiplier;
-                    boomFactors.push('🌟 TOP TIER CEILING GAME');
-                }
-
-                // NUCLEAR DETECTION
-                const isNuclear = boomScore >= this.nuclearThresholds.perfectStorm || 
-                                 (gameContext.total >= this.nuclearThresholds.massiveTotal && 
-                                  gameContext.spread >= this.nuclearThresholds.desperateSpread);
-
-                const isBoomSpot = boomScore >= 1.5 || boomMultiplier >= 1.35;
-
-                return {
-                    boomScore,
-                    boomMultiplier,
-                    defenseMultiplier,
-                    boomFactors,
-                    isBoomSpot,
-                    isNuclear,
-                    defenseInsights: insights
-                };
-            }
-
-            analyzeDefensiveWeakness(defense) {
+            // NEW: Pure stats-based defense analysis
+            analyzeDefenseByStats(defense) {
                 let multiplier = 1.0;
-                let boomScore = 0;
-                let boomMultiplier = 1.0;
-                const boomFactors = [];
                 const insights = {
-                    weaknesses: [],
+                    stats: [],
                     strengths: [],
-                    coverageNotes: [],
-                    pressureNotes: []
+                    weaknesses: []
                 };
 
-                // Overall defensive ranking
+                // Use actual database defensive stats
+                const overallRating = defense.overall_rating || 95;
                 const rank = defense.rank || 16;
-                const overallRating = defense.overall_rating || defense.man_rating || 95;
                 
-                // BOTTOM TIER DEFENSE = MASSIVE BOOM
-                if (rank >= 29) {
-                    multiplier *= 1.50;
-                    boomScore += 2.0;
-                    boomMultiplier *= this.boomCriteria.defenseWeakness.bottomFive.multiplier;
-                    insights.weaknesses.push('🔥 BOTTOM 5 DEFENSE');
-                    boomFactors.push(`💥 WORST DEFENSE (Rank ${rank})`);
-                } else if (rank >= 25) {
-                    multiplier *= 1.30;
-                    boomScore += 1.5;
-                    boomMultiplier *= 1.35;
-                    insights.weaknesses.push('📉 BOTTOM 8 DEFENSE');
-                    boomFactors.push(`🎯 Terrible Defense (Rank ${rank})`);
-                } else if (rank >= 20) {
-                    multiplier *= 1.15;
-                    boomScore += 0.8;
-                    insights.weaknesses.push('Below Average Defense');
-                } else if (rank <= 5) {
-                    multiplier *= 0.75;
-                    insights.strengths.push('🛡️ ELITE Defense - Avoid!');
+                // CONSERVATIVE adjustments based on actual defensive performance
+                if (rank <= 5) {
+                    multiplier *= 0.93; // 7% reduction vs elite defenses
+                    insights.strengths.push(`Elite Defense (Rank ${rank})`);
                 } else if (rank <= 12) {
-                    multiplier *= 0.88;
-                    insights.strengths.push('Strong Defense');
+                    multiplier *= 0.96; // 4% reduction vs good defenses
+                    insights.strengths.push(`Strong Defense (Rank ${rank})`);
+                } else if (rank >= 25) {
+                    multiplier *= 1.06; // 6% boost vs bad defenses
+                    insights.weaknesses.push(`Poor Defense (Rank ${rank})`);
+                } else if (rank >= 20) {
+                    multiplier *= 1.03; // 3% boost vs below average
+                    insights.weaknesses.push(`Below Average Defense (Rank ${rank})`);
                 }
 
-                // PASS DEFENSE RATING BOOM
-                if (overallRating >= 115) {
-                    boomScore += 1.8;
-                    boomMultiplier *= this.boomCriteria.defenseWeakness.terriblePass.multiplier;
-                    insights.weaknesses.push('🔥 HISTORICALLY BAD PASS D');
-                    boomFactors.push(`💀 Terrible Pass D (${overallRating.toFixed(1)} rating)`);
-                } else if (overallRating >= 105) {
-                    boomScore += 1.2;
-                    boomMultiplier *= 1.25;
-                    insights.weaknesses.push('📈 Poor Pass Defense');
-                    boomFactors.push(`🎯 Weak Pass D (${overallRating.toFixed(1)} rating)`);
+                // Rating-based adjustments (conservative)
+                if (overallRating >= 105) {
+                    multiplier *= 1.04; // 4% boost vs poor pass defense
+                    insights.stats.push(`Poor Pass D (${overallRating.toFixed(1)} rating)`);
+                } else if (overallRating <= 85) {
+                    multiplier *= 0.96; // 4% reduction vs good pass defense
+                    insights.stats.push(`Strong Pass D (${overallRating.toFixed(1)} rating)`);
                 }
 
-                // PASS RUSH ANALYSIS
+                // Sack percentage (actual pressure data)
                 const sackPct = defense.overall_sack_pct || defense.man_sack_pct || 6;
-                if (sackPct < 3.5) {
-                    boomScore += 1.5;
-                    boomMultiplier *= this.boomCriteria.defenseWeakness.noPassRush.multiplier;
-                    insights.weaknesses.push('🔥 NO PASS RUSH');
-                    boomFactors.push(`⏰ No Pressure (${sackPct.toFixed(1)}% sacks)`);
-                } else if (sackPct < 5) {
-                    boomScore += 0.8;
-                    boomMultiplier *= 1.15;
-                    insights.weaknesses.push('Weak Pass Rush');
-                    boomFactors.push(`📉 Low Pressure (${sackPct.toFixed(1)}% sacks)`);
-                } else if (sackPct > 9) {
-                    multiplier *= 0.82;
-                    insights.strengths.push('🚫 Heavy Pass Rush');
+                if (sackPct >= 8.5) {
+                    multiplier *= 0.94; // 6% reduction vs high pressure
+                    insights.stats.push(`Heavy Pressure (${sackPct.toFixed(1)}% sacks)`);
+                } else if (sackPct <= 4.5) {
+                    multiplier *= 1.04; // 4% boost vs low pressure
+                    insights.stats.push(`Low Pressure (${sackPct.toFixed(1)}% sacks)`);
                 }
 
-                // YARDS PER ATTEMPT = BIG PLAY POTENTIAL
+                // Yards per attempt allowed (big play tendency)
                 const ypaAllowed = defense.overall_ypa || defense.man_yards_per_attempt || 7.0;
-                if (ypaAllowed >= 8.5) {
-                    boomScore += 1.3;
-                    boomMultiplier *= this.boomCriteria.defenseWeakness.homeRunAllowed.multiplier;
-                    insights.weaknesses.push('🔥 GIVES UP HOME RUNS');
-                    boomFactors.push(`🚀 Big Play Prone (${ypaAllowed.toFixed(1)} YPA)`);
-                } else if (ypaAllowed >= 7.8) {
-                    boomScore += 0.7;
-                    boomMultiplier *= 1.10;
-                    insights.weaknesses.push('Big Play Vulnerable');
+                if (ypaAllowed >= 7.8) {
+                    multiplier *= 1.03; // 3% boost vs big play prone defenses
+                    insights.stats.push(`Big Play Prone (${ypaAllowed.toFixed(1)} YPA)`);
+                } else if (ypaAllowed <= 6.2) {
+                    multiplier *= 0.97; // 3% reduction vs stingy defenses
+                    insights.stats.push(`Limits Big Plays (${ypaAllowed.toFixed(1)} YPA)`);
                 }
 
-                // COVERAGE WEAKNESS
+                // Completion percentage allowed
+                const compPct = defense.overall_completion_pct || defense.man_completion_pct || 65;
+                if (compPct >= 67) {
+                    multiplier *= 1.02; // 2% boost vs high completion % allowed
+                    insights.stats.push(`High Completion % (${compPct.toFixed(1)}%)`);
+                } else if (compPct <= 61) {
+                    multiplier *= 0.98; // 2% reduction vs low completion % allowed
+                    insights.stats.push(`Forces Incompletions (${compPct.toFixed(1)}%)`);
+                }
+
+                // Coverage analysis
                 const manRating = defense.man_rating || 95;
                 const manPct = defense.man_pct || 50;
                 
-                if (manRating >= 110 && manPct > 50) {
-                    boomScore += 1.0;
-                    boomMultiplier *= this.boomCriteria.defenseWeakness.badCoverage.multiplier;
-                    insights.weaknesses.push('🔥 TERRIBLE MAN COVERAGE');
-                    boomFactors.push(`💥 Weak Man (${manRating.toFixed(1)} rating)`);
+                if (manRating >= 105 && manPct > 45) {
+                    multiplier *= 1.03; // 3% boost vs poor man coverage
+                    insights.stats.push(`Weak Man Coverage (${manRating.toFixed(1)} rating, ${manPct.toFixed(1)}%)`);
+                } else if (manRating <= 85 && manPct > 55) {
+                    multiplier *= 0.97; // 3% reduction vs strong man coverage
+                    insights.stats.push(`Strong Man Coverage (${manRating.toFixed(1)} rating, ${manPct.toFixed(1)}%)`);
                 }
 
-                return { 
-                    multiplier, 
-                    boomScore, 
-                    boomMultiplier, 
-                    boomFactors, 
-                    insights 
-                };
-            }
-
-            calculateMatchupGrade(totalMultiplier, boomScore, isNuclear) {
-                if (isNuclear) return { grade: 'A++', color: 'grade-A', description: '🔥 NUCLEAR MATCHUP 🔥' };
-                if (boomScore >= 3.0) return { grade: 'A+', color: 'grade-A', description: '💥 BOOM SPOT' };
-                if (boomScore >= 2.0) return { grade: 'A', color: 'grade-A', description: 'Elite Matchup' };
-                if (boomScore >= 1.2) return { grade: 'B+', color: 'grade-B', description: 'Great Matchup' };
-                if (totalMultiplier >= 1.05) return { grade: 'B', color: 'grade-B', description: 'Good Matchup' };
-                if (totalMultiplier >= 0.95) return { grade: 'C', color: 'grade-C', description: 'Average Matchup' };
-                if (totalMultiplier >= 0.85) return { grade: 'D', color: 'grade-D', description: 'Tough Matchup' };
-                return { grade: 'F', color: 'grade-F', description: 'AVOID' };
-            }
-
-            getTierInfo(tier) {
-                const tierInfo = {
-                    elite: { display: 'Elite Tier (Top 3)', class: 'tier-elite' },
-                    top: { display: 'Top Tier (4-8)', class: 'tier-top' },
-                    good: { display: 'Good Tier (9-15)', class: 'tier-good' },
-                    mid: { display: 'Mid Tier (16-24)', class: 'tier-mid' },
-                    low: { display: 'Low Tier (25+)', class: 'tier-low' }
-                };
-                return tierInfo[tier] || { display: 'Unknown Tier', class: 'tier-mid' };
+                return { multiplier, insights };
             }
             
             getSpreadMultiplier(spread) {
@@ -1241,6 +810,7 @@
 
                 qbData = data;
                 console.log(`✅ Loaded ${qbData.length} quarterbacks`);
+                console.log('Sample QB data:', qbData[0]);
                 
                 populateQBSelect();
                 showStatus('Quarterback data loaded successfully!', 'success');
@@ -1249,7 +819,6 @@
                 console.error('❌ Error loading QB data:', error);
                 showStatus(`Failed to load QB data: ${error.message}`, 'error');
                 
-                // Populate with placeholder message
                 const select = document.getElementById('qb-select');
                 select.innerHTML = '<option value="">Failed to load QBs - check console</option>';
             }
@@ -1277,13 +846,13 @@
 
                 defenseData = data;
                 console.log(`✅ Loaded ${defenseData.length} team defenses`);
+                console.log('Sample defense data:', defenseData[0]);
                 
                 populateOpponentSelect();
                 checkAuditButtonStatus();
 
             } catch (error) {
                 console.error('❌ Error loading defense data:', error);
-                // Don't show error for defense data since it's optional
                 defenseData = [];
                 populateOpponentSelect();
             }
@@ -1294,12 +863,9 @@
             select.innerHTML = '<option value="">Select a quarterback</option>';
 
             qbData.forEach((qb) => {
-                const qbProfile = projector.categorizeQB(qb);
-                const tierInfo = projector.getTierInfo(qbProfile.tier);
-                
                 const option = document.createElement('option');
                 option.value = qb.name;
-                option.textContent = `${qb.name} (${qb.team}) - ${tierInfo.display}`;
+                option.textContent = `${qb.name} (${qb.team}) - ${qb.weighted_fp_per_db.toFixed(3)} FP/DB`;
                 select.appendChild(option);
             });
         }
@@ -1312,11 +878,11 @@
                 defenseData.forEach((team) => {
                     const option = document.createElement('option');
                     option.value = team.team;
-                    option.textContent = `${team.team_name} (${team.team})`;
+                    option.textContent = `${team.team_name || team.team} (${team.team})`;
                     select.appendChild(option);
                 });
             } else {
-                // Fallback to basic team list if no defense data
+                // Fallback to basic team list
                 const teams = [
                     'ARI', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 'DEN',
                     'DET', 'GB', 'HOU', 'IND', 'JAX', 'KC', 'LV', 'LAC', 'LAR', 'MIA',
@@ -1331,7 +897,6 @@
             }
         }
 
-        // Tab switching
         function switchTab(tabName) {
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -1340,7 +905,6 @@
             document.getElementById(`${tabName}-tab`).classList.add('active');
         }
 
-        // Generate single projection with boom/bust analysis
         function generateProjection() {
             const qbName = document.getElementById('qb-select').value;
             const opponentTeam = document.getElementById('opponent-select').value;
@@ -1380,135 +944,59 @@
         function displayProjection(qb, projection, gameContext, opponentDefense) {
             const resultsDiv = document.getElementById('projection-results');
             
-            const opponentName = opponentDefense ? opponentDefense.team_name : gameContext.opponent || 'Unknown';
+            const opponentName = opponentDefense ? (opponentDefense.team_name || opponentDefense.team) : opponentTeam;
             const opponentTeam = opponentDefense ? opponentDefense.team : gameContext.opponent || 'UNK';
             
-            // Determine card styling
-            let cardClass = 'projection-card';
-            if (projection.isNuclear) cardClass += ' nuclear-card';
-            else if (projection.isBoomSpot) cardClass += ' boom-card';
-            else if (projection.isBustSpot) cardClass += ' bust-card';
-            
-            // QB Tier display
-            const tierInfo = projector.getTierInfo(projection.qbTier);
-            const tierHTML = `
-                <div class="tier-display ${tierInfo.class}">
-                    ${tierInfo.display}
-                    <div style="font-size: 0.8rem; margin-top: 5px;">
-                        Baseline: ${projection.baseFPPerDB.toFixed(3)} FP/DB 
-                        (was ${projection.originalFPPerDB.toFixed(3)})
-                    </div>
-                </div>
-            `;
-
-            // Boom Alert
-            let boomAlertHTML = '';
-            if (projection.isNuclear) {
-                boomAlertHTML = `
-                    <div class="boom-alert nuclear-alert">
-                        ☢️ NUCLEAR MATCHUP DETECTED ☢️<br>
-                        SMASH SPOT - CEILING PLAY
-                    </div>
-                `;
-            } else if (projection.isBoomSpot) {
-                boomAlertHTML = `
-                    <div class="boom-alert">
-                        🚀 BOOM SPOT DETECTED 🚀<br>
-                        HIGH CEILING GAME
-                    </div>
-                `;
-            }
-
-            // Range display
-            const rangeHTML = `
-                <div class="range-display">
-                    <div class="range-title">📊 Projected Range (Boom Score: ${projection.boomScore.toFixed(1)})</div>
-                    <div class="range-values">
-                        <div class="range-item">
-                            <div class="range-value range-floor">${projection.floor.toFixed(1)}</div>
-                            <div class="range-label">Floor</div>
-                        </div>
-                        <div class="range-item">
-                            <div class="range-value range-projection">${projection.totalProjectedFP.toFixed(1)}</div>
-                            <div class="range-label">Projection</div>
-                        </div>
-                        <div class="range-item">
-                            <div class="range-value range-ceiling">${projection.ceiling.toFixed(1)}</div>
-                            <div class="range-label">Ceiling</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // Boom factors display
-            let boomFactorsHTML = '';
-            if (projection.boomFactors.length > 0) {
-                boomFactorsHTML = `
-                    <div class="boom-factors">
-                        <div class="boom-title">🚀 Boom Factors (${projection.boomMultiplier.toFixed(2)}x multiplier):</div>
-                        ${projection.boomFactors.map(factor => {
-                            const isNuclear = factor.includes('🔥') || factor.includes('💥') || factor.includes('NUCLEAR');
-                            return `<span class="boom-factor ${isNuclear ? 'nuclear-factor' : ''}">${factor}</span>`;
-                        }).join('')}
-                    </div>
-                `;
-            }
-
             let defenseInsightsHTML = '';
             if (projection.defenseInsights) {
                 const insights = projection.defenseInsights;
                 defenseInsightsHTML = `
                     <div class="defense-insights">
-                        <h4>🛡️ Defensive Analysis: ${opponentName}</h4>
+                        <h4>🛡️ Defense Stats: ${opponentName}</h4>
                         
-                        ${insights.weaknesses.length > 0 ? `
+                        ${insights.stats.length > 0 ? `
                             <div style="margin-bottom: 10px;">
-                                <strong>🎯 Exploitable Weaknesses:</strong><br>
-                                ${insights.weaknesses.map(w => `<span class="defense-weakness">${w}</span>`).join('')}
+                                <strong>📊 Key Stats:</strong><br>
+                                ${insights.stats.map(s => `<span class="defense-stat">${s}</span>`).join('')}
                             </div>
                         ` : ''}
                         
                         ${insights.strengths.length > 0 ? `
                             <div style="margin-bottom: 10px;">
-                                <strong>⚠️ Defensive Strengths:</strong><br>
-                                ${insights.strengths.map(s => `<span class="defense-strength">${s}</span>`).join('')}
+                                <strong>💪 Strengths:</strong><br>
+                                ${insights.strengths.map(s => `<span class="defense-stat">${s}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${insights.weaknesses.length > 0 ? `
+                            <div>
+                                <strong>🎯 Weaknesses:</strong><br>
+                                ${insights.weaknesses.map(w => `<span class="defense-stat">${w}</span>`).join('')}
                             </div>
                         ` : ''}
                     </div>
                 `;
             }
-
-            // Matchup grade display
-            const matchupGradeHTML = `
-                <div class="matchup-grade">
-                    <div class="grade-display ${projection.matchupGrade.color}">${projection.matchupGrade.grade}</div>
-                    <div style="font-size: 1.2rem; font-weight: 600; color: #374151;">
-                        ${projection.matchupGrade.description}
-                    </div>
-                </div>
-            `;
             
             resultsDiv.innerHTML = `
-                <div class="${cardClass}">
+                <div class="projection-card">
                     <div class="projection-header">
                         <span class="qb-name">${qb.name} (${qb.team})</span>
                         <span class="opponent">vs ${opponentTeam}</span>
                     </div>
                     
-                    ${tierHTML}
-                    ${boomAlertHTML}
-                    ${matchupGradeHTML}
-                    ${rangeHTML}
-                    ${boomFactorsHTML}
-                    
                     <div class="projection-stats">
                         <div class="stat-card">
                             <div class="stat-value">${projection.totalProjectedFP.toFixed(1)}</div>
-                            <div class="stat-label">Final Projection</div>
+                            <div class="stat-label">Projected Fantasy Points</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${projection.baseFPPerDB.toFixed(3)}</div>
+                            <div class="stat-label">Base FP per Dropback</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${projection.adjustedFPPerDB.toFixed(3)}</div>
-                            <div class="stat-label">Adjusted FP/DB</div>
+                            <div class="stat-label">Adjusted FP per Dropback</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${projection.estimatedDropbacks}</div>
@@ -1516,11 +1004,7 @@
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${((projection.totalMultiplier - 1) * 100).toFixed(1)}%</div>
-                            <div class="stat-label">Matchup Adjustment</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${((projection.boomMultiplier - 1) * 100).toFixed(1)}%</div>
-                            <div class="stat-label">Boom Factor</div>
+                            <div class="stat-label">Total Adjustment</div>
                         </div>
                     </div>
                     
@@ -1528,20 +1012,12 @@
                         <div class="breakdown-title">📊 Projection Breakdown</div>
                         <div class="breakdown-grid">
                             <div class="breakdown-item">
-                                <div class="breakdown-value">${projection.baseFPPerDB.toFixed(3)}</div>
-                                <div class="breakdown-label">Normalized Base</div>
-                            </div>
-                            <div class="breakdown-item">
                                 <div class="breakdown-value">${gameContext.spread !== null ? gameContext.spread : 'N/A'}</div>
                                 <div class="breakdown-label">Spread</div>
                             </div>
                             <div class="breakdown-item">
                                 <div class="breakdown-value">${gameContext.total !== null ? gameContext.total : 'N/A'}</div>
                                 <div class="breakdown-label">Game Total</div>
-                            </div>
-                            <div class="breakdown-item">
-                                <div class="breakdown-value">${projection.boomScore.toFixed(1)}</div>
-                                <div class="breakdown-label">Boom Score</div>
                             </div>
                             <div class="breakdown-item">
                                 <div class="breakdown-value">${((projection.adjustmentBreakdown.spreadAdj - 1) * 100).toFixed(1)}%</div>
@@ -1555,6 +1031,10 @@
                                 <div class="breakdown-value">${((projection.adjustmentBreakdown.defenseAdj - 1) * 100).toFixed(1)}%</div>
                                 <div class="breakdown-label">Defense Impact</div>
                             </div>
+                            <div class="breakdown-item">
+                                <div class="breakdown-value">${((projection.adjustmentBreakdown.dropbackAdj - 1) * 100).toFixed(1)}%</div>
+                                <div class="breakdown-label">Volume Impact</div>
+                            </div>
                         </div>
                     </div>
                     
@@ -1563,9 +1043,7 @@
             `;
         }
 
-        // Keep all the existing CSV upload and audit functions the same...
-        // (handleCSVUpload, handleGameLogUpload, processGameLogData, etc.)
-        
+        // Keep all existing CSV and audit functions...
         function handleCSVUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1754,10 +1232,6 @@
                 const weeklyResults = [];
                 let totalProjected = 0;
                 let totalActual = 0;
-                let boomWeeksHit = 0;
-                let boomWeeksProjected = 0;
-                let nuclearWeeksProjected = 0;
-                let nuclearWeeksHit = 0;
 
                 for (const game of qbGames) {
                     try {
@@ -1784,16 +1258,6 @@
                             const actualFP = getActualFantasyPoints(qb.name, week);
                             
                             if (actualFP !== null) {
-                                const wasBoomWeek = actualFP >= 25; // Define boom as 25+ FP
-                                const wasNuclearWeek = actualFP >= 35; // Define nuclear as 35+ FP
-                                const projectedBoom = projection.isBoomSpot;
-                                const projectedNuclear = projection.isNuclear;
-
-                                if (projectedBoom) boomWeeksProjected++;
-                                if (projectedNuclear) nuclearWeeksProjected++;
-                                if (wasBoomWeek) boomWeeksHit++;
-                                if (wasNuclearWeek) nuclearWeeksHit++;
-
                                 weeklyResults.push({
                                     week: week,
                                     date: game.commence_time.split('T')[0],
@@ -1805,15 +1269,7 @@
                                     actual: actualFP,
                                     diff: actualFP - projectedFP,
                                     accuracy: Math.max(0, 1 - (Math.abs(actualFP - projectedFP) / Math.max(actualFP, 1))),
-                                    defenseUsed: !!opponentDefense,
-                                    matchupGrade: projection.matchupGrade,
-                                    wasBoomWeek: wasBoomWeek,
-                                    wasNuclearWeek: wasNuclearWeek,
-                                    projectedBoom: projectedBoom,
-                                    projectedNuclear: projectedNuclear,
-                                    boomScore: projection.boomScore,
-                                    ceiling: projection.ceiling,
-                                    floor: projection.floor
+                                    defenseUsed: !!opponentDefense
                                 });
 
                                 totalProjected += projectedFP;
@@ -1830,8 +1286,6 @@
                     const totalError = Math.abs(totalActual - totalProjected);
                     const totalAccuracy = Math.max(0, 1 - (totalError / Math.max(totalActual, 1)));
                     const defenseDataUsage = weeklyResults.filter(w => w.defenseUsed).length / weeklyResults.length;
-                    const boomAccuracy = boomWeeksProjected > 0 ? (boomWeeksHit / Math.max(boomWeeksProjected, 1)) : 0;
-                    const nuclearAccuracy = nuclearWeeksProjected > 0 ? (nuclearWeeksHit / Math.max(nuclearWeeksProjected, 1)) : 0;
 
                     auditResults.push({
                         name: qb.name,
@@ -1843,12 +1297,6 @@
                         totalAccuracy: totalAccuracy,
                         avgWeeklyAccuracy: avgAccuracy,
                         defenseDataUsage: defenseDataUsage,
-                        boomWeeksHit: boomWeeksHit,
-                        boomWeeksProjected: boomWeeksProjected,
-                        boomAccuracy: boomAccuracy,
-                        nuclearWeeksProjected: nuclearWeeksProjected,
-                        nuclearWeeksHit: nuclearWeeksHit,
-                        nuclearAccuracy: nuclearAccuracy,
                         weeklyResults: weeklyResults.sort((a, b) => a.week - b.week)
                     });
                 }
@@ -1874,13 +1322,10 @@
             const totalActual = results.reduce((sum, qb) => sum + qb.totalActual, 0);
             const totalGames = results.reduce((sum, qb) => sum + qb.gamesPlayed, 0);
             const avgDefenseUsage = results.reduce((sum, qb) => sum + qb.defenseDataUsage, 0) / results.length;
-            const totalBoomWeeks = results.reduce((sum, qb) => sum + qb.boomWeeksHit, 0);
-            const totalNuclearWeeks = results.reduce((sum, qb) => sum + qb.nuclearWeeksHit, 0);
-            const avgBoomAccuracy = results.reduce((sum, qb) => sum + qb.boomAccuracy, 0) / results.length;
 
             let html = `
                 <div class="audit-summary">
-                    <h2>📊 2024 NFL Season Audit Summary (AGGRESSIVE BOOM MODEL)</h2>
+                    <h2>📊 2024 NFL Season Audit Summary (Pure Database Stats)</h2>
                     <div class="breakdown-grid" style="margin-top: 20px;">
                         <div class="breakdown-item">
                             <div class="breakdown-value">${results.length}</div>
@@ -1895,18 +1340,6 @@
                             <div class="breakdown-label">Avg Accuracy</div>
                         </div>
                         <div class="breakdown-item">
-                            <div class="breakdown-value">${totalBoomWeeks}</div>
-                            <div class="breakdown-label">Boom Weeks (25+ FP)</div>
-                        </div>
-                        <div class="breakdown-item">
-                            <div class="breakdown-value">${totalNuclearWeeks}</div>
-                            <div class="breakdown-label">Nuclear Weeks (35+ FP)</div>
-                        </div>
-                        <div class="breakdown-item">
-                            <div class="breakdown-value">${(avgBoomAccuracy * 100).toFixed(1)}%</div>
-                            <div class="breakdown-label">Boom Detection Rate</div>
-                        </div>
-                        <div class="breakdown-item">
                             <div class="breakdown-value">${(avgDefenseUsage * 100).toFixed(1)}%</div>
                             <div class="breakdown-label">Defense Data Usage</div>
                         </div>
@@ -1914,14 +1347,20 @@
                             <div class="breakdown-value">${totalProjected.toFixed(0)}</div>
                             <div class="breakdown-label">Total Projected FP</div>
                         </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-value">${totalActual.toFixed(0)}</div>
+                            <div class="breakdown-label">Total Actual FP</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-value">${(totalActual - totalProjected).toFixed(0)}</div>
+                            <div class="breakdown-label">Total Difference</div>
+                        </div>
                     </div>
                 </div>
             `;
 
             results.forEach(qb => {
                 const accuracyColor = qb.totalAccuracy > 0.8 ? '#10b981' : qb.totalAccuracy > 0.6 ? '#f59e0b' : '#dc2626';
-                const boomColor = qb.boomAccuracy > 0.6 ? '#10b981' : qb.boomAccuracy > 0.4 ? '#f59e0b' : '#dc2626';
-                const nuclearColor = qb.nuclearAccuracy > 0.5 ? '#10b981' : qb.nuclearAccuracy > 0.25 ? '#f59e0b' : '#dc2626';
                 
                 html += `
                     <div class="player-audit-card">
@@ -1929,21 +1368,11 @@
                             <div>
                                 <div class="player-name">${qb.name} (${qb.team})</div>
                                 <div style="color: #6b7280; font-size: 0.9rem;">
-                                    ${qb.gamesPlayed} games • ${qb.boomWeeksHit}/${qb.boomWeeksProjected} boom • ${qb.nuclearWeeksHit}/${qb.nuclearWeeksProjected} nuclear
+                                    ${qb.gamesPlayed} games • ${(qb.defenseDataUsage * 100).toFixed(0)}% defense data coverage
                                 </div>
                             </div>
-                            <div style="display: flex; gap: 8px; flex-direction: column;">
-                                <div class="accuracy-score" style="background-color: ${accuracyColor}; font-size: 0.8rem;">
-                                    ${(qb.totalAccuracy * 100).toFixed(1)}% Acc
-                                </div>
-                                <div class="accuracy-score" style="background-color: ${boomColor}; font-size: 0.8rem;">
-                                    ${(qb.boomAccuracy * 100).toFixed(1)}% Boom
-                                </div>
-                                ${qb.nuclearWeeksProjected > 0 ? `
-                                    <div class="accuracy-score" style="background-color: ${nuclearColor}; font-size: 0.8rem;">
-                                        ${(qb.nuclearAccuracy * 100).toFixed(1)}% Nuclear
-                                    </div>
-                                ` : ''}
+                            <div class="accuracy-score" style="background-color: ${accuracyColor};">
+                                ${(qb.totalAccuracy * 100).toFixed(1)}% Accuracy
                             </div>
                         </div>
                         
@@ -1977,22 +1406,11 @@
                     const accuracyColor = week.accuracy > 0.8 ? '#10b981' : week.accuracy > 0.6 ? '#f59e0b' : '#dc2626';
                     const homeAway = week.isHome ? 'vs' : '@';
                     const defenseIcon = week.defenseUsed ? '🛡️' : '';
-                    const gradeColor = week.matchupGrade ? week.matchupGrade.color : '';
-                    const grade = week.matchupGrade ? week.matchupGrade.grade : 'N/A';
-                    
-                    // Show boom/nuclear indicators
-                    let weekIcon = '';
-                    if (week.wasNuclearWeek) weekIcon += '☢️';
-                    else if (week.wasBoomWeek) weekIcon += '🚀';
-                    
-                    if (week.projectedNuclear) weekIcon += '🔥';
-                    else if (week.projectedBoom) weekIcon += '⭐';
                     
                     html += `
                         <div class="week-item">
                             <div style="font-weight: 600; margin-bottom: 5px;">
-                                Week ${week.week} ${defenseIcon}${weekIcon}
-                                <span class="${gradeColor}" style="font-size: 0.8rem; margin-left: 5px;">${grade}</span>
+                                Week ${week.week} ${defenseIcon}
                             </div>
                             <div style="font-size: 0.8rem; margin-bottom: 3px;">${homeAway} ${week.opponent}</div>
                             <div style="font-size: 0.7rem; margin-bottom: 3px;">${week.date}</div>
@@ -2003,9 +1421,6 @@
                             </div>
                             <div style="color: ${accuracyColor}; font-size: 0.7rem; margin-top: 2px;">
                                 ${(week.accuracy * 100).toFixed(0)}% acc
-                            </div>
-                            <div style="font-size: 0.6rem; color: #6b7280; margin-top: 2px;">
-                                Boom: ${week.boomScore.toFixed(1)} | C: ${week.ceiling.toFixed(1)}
                             </div>
                         </div>
                     `;
@@ -2018,7 +1433,7 @@
             });
 
             auditResultsDiv.innerHTML = html;
-            showAuditStatus(`🎉 AGGRESSIVE BOOM audit completed! Analyzed ${results.length} QBs with ${totalBoomWeeks} boom weeks and ${totalNuclearWeeks} nuclear weeks detected.`, 'success');
+            showAuditStatus(`🎉 Database-driven audit completed! Analyzed ${results.length} QBs using pure statistical analysis.`, 'success');
         }
 
         function showStatus(message, type) {
