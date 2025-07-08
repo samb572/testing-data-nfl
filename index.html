@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QB Fantasy Projections with Matchup Analysis</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5"></script>
     <style>
         * {
@@ -107,8 +106,7 @@
         }
 
         .input-group select,
-        .input-group input,
-        .input-group input[type="file"] {
+        .input-group input {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e5e7eb;
@@ -124,7 +122,7 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        .project-btn, .audit-btn {
+        .project-btn {
             width: 100%;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
@@ -138,18 +136,8 @@
             margin-bottom: 10px;
         }
 
-        .audit-btn {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        }
-
-        .project-btn:hover, .audit-btn:hover {
+        .project-btn:hover {
             transform: translateY(-2px);
-        }
-
-        .project-btn:disabled, .audit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
         }
 
         .results-area {
@@ -167,17 +155,14 @@
             position: relative;
         }
 
-        /* Matchup highlight overlays */
         .boom-matchup {
             background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
             border-left: 5px solid #10b981;
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
         }
 
         .bust-matchup {
             background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             border-left: 5px solid #ef4444;
-            box-shadow: 0 0 25px rgba(239, 68, 68, 0.15);
         }
 
         .neutral-matchup {
@@ -220,20 +205,9 @@
             gap: 5px;
         }
 
-        .boom-indicator {
-            background: #10b981;
-            color: white;
-        }
-
-        .bust-indicator {
-            background: #ef4444;
-            color: white;
-        }
-
-        .neutral-indicator {
-            background: #64748b;
-            color: white;
-        }
+        .boom-indicator { background: #10b981; color: white; }
+        .bust-indicator { background: #ef4444; color: white; }
+        .neutral-indicator { background: #64748b; color: white; }
 
         .projection-stats {
             display: grid;
@@ -262,34 +236,7 @@
             color: #64748b;
             font-weight: 500;
         }
-
-        .confidence-interval {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid #3b82f6;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 20px 0;
-        }
-
-        .confidence-title {
-            font-weight: 600;
-            color: #1e40af;
-            margin-bottom: 10px;
-        }
-
-        .confidence-range {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1.1rem;
-        }
-
-        .confidence-low, .confidence-high {
-            font-weight: 600;
-            color: #1e40af;
-        }
         
-        /* New Coverage Section Styles */
         .coverage-analysis {
             background: #f0f9ff;
             border-radius: 12px;
@@ -309,72 +256,22 @@
             gap: 20px;
             align-items: center;
         }
-        .coverage-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
         .coverage-label {
             font-weight: 600;
             color: #374151;
             margin-bottom: 8px;
         }
-        .coverage-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #1d4ed8;
-        }
-         .coverage-impact-card {
+        .coverage-impact-card {
             background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
             padding: 20px;
             border-radius: 12px;
             text-align: center;
-            grid-column: 1 / -1; /* Span full width */
+            grid-column: 1 / -1;
         }
         .coverage-impact-value {
              font-size: 1.5rem;
              font-weight: 700;
              color: #1e40af;
-        }
-
-        .statistical-metrics {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .metrics-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 15px;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .metric-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .metric-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #0f172a;
-        }
-
-        .metric-label {
-            font-size: 0.8rem;
-            color: #64748b;
-            margin-top: 5px;
         }
 
         .breakdown-section {
@@ -442,29 +339,11 @@
         }
 
         @media (max-width: 968px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .matchup-indicator {
-                position: static;
-                margin-bottom: 15px;
-                align-self: flex-start;
-            }
-
-            .projection-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .coverage-grid {
-                grid-template-columns: 1fr;
-            }
+            .main-content { grid-template-columns: 1fr; }
+            .header h1 { font-size: 2rem; }
+            .matchup-indicator { position: static; margin-bottom: 15px; align-self: flex-start; }
+            .projection-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .coverage-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -507,16 +386,6 @@
                         <input type="number" id="total-input" step="0.5" placeholder="e.g., 47.5">
                     </div>
 
-                    <div class="input-group">
-                        <label for="confidence-level">Confidence Level</label>
-                        <select id="confidence-level">
-                            <option value="68">68% (1σ)</option>
-                            <option value="90">90%</option>
-                            <option value="95" selected>95% (2σ)</option>
-                            <option value="99">99%</option>
-                        </select>
-                    </div>
-
                     <button class="project-btn" onclick="generateProjection()">
                         Analyze Matchup
                     </button>
@@ -540,7 +409,6 @@
     </div>
 
     <script>
-        // Supabase setup
         const SUPABASE_URL = 'https://ooxzkffzedtfiiparnrz.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9veHprZmZ6ZWR0ZmlpcGFybnJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5Mzk5NzgsImV4cCI6MjA2NzUxNTk3OH0.exRTwGBwMWC-fpZvySHnxBEOpPpytHzKRO_s5FlnMhA';
         
@@ -548,13 +416,11 @@
         let qbData = [];
         let defenseData = [];
 
-        // Initialize Supabase when DOM loads
         document.addEventListener('DOMContentLoaded', async function() {
             try {
                 const { createClient } = supabase;
                 supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 console.log('🚀 Application loaded successfully');
-                console.log('📊 Loading data from Supabase...');
                 await Promise.all([loadQBData(), loadDefenseData()]);
             } catch (error) {
                 console.error('❌ Failed to initialize:', error);
@@ -563,46 +429,13 @@
         });
 
         class EnhancedQBMatchupAnalyzer {
-            constructor() {
+             constructor() {
                 this.gameScriptAdjustments = {
-                    spread: {
-                        bigFavorite: 0.90,   // -14+
-                        favorite: 0.95,      // -7 to -13.5
-                        smallFavorite: 0.98, // -3 to -6.5
-                        pickEm: 1.0,         // -2.5 to +2.5
-                        smallUnderdog: 1.02, // +3 to +6.5
-                        underdog: 1.06,      // +7 to +13.5
-                        bigUnderdog: 1.12    // +14+
-                    },
-                    total: {
-                        veryLow: 0.90,    // Under 40
-                        low: 0.95,        // 40-44.5
-                        average: 1.0,     // 45-49.5
-                        high: 1.05,       // 50-54.5
-                        veryHigh: 1.10    // 55+
-                    }
+                    spread: { bigFavorite: 0.90, favorite: 0.95, smallFavorite: 0.98, pickEm: 1.0, smallUnderdog: 1.02, underdog: 1.06, bigUnderdog: 1.12 },
+                    total: { veryLow: 0.90, low: 0.95, average: 1.0, high: 1.05, veryHigh: 1.10 }
                 };
+             }
 
-                this.statisticalParams = {
-                    varianceMultipliers: {
-                        elite: { boom: 1.15, neutral: 1.0, bust: 0.92 },
-                        good: { boom: 1.22, neutral: 1.08, bust: 0.95 },
-                        average: { boom: 1.35, neutral: 1.15, bust: 1.05 },
-                        poor: { boom: 1.45, neutral: 1.25, bust: 1.15 }
-                    },
-                    baseStdDevPct: 0.18,
-                    minDropbacksForConfidence: 200,
-                };
-            }
-
-            determineQBTier(qb) {
-                const fpPerDB = qb.weighted_fp_per_db || 0.4;
-                if (fpPerDB >= 0.52) return 'elite';
-                if (fpPerDB >= 0.46) return 'good';
-                if (fpPerDB >= 0.40) return 'average';
-                return 'poor';
-            }
-            
             calculateCoverageImpact(qb, opponentDefense) {
                 if (!opponentDefense) {
                     return { multiplier: 1.0, breakdown: null };
@@ -610,25 +443,23 @@
 
                 const baseFpdb = qb.weighted_fp_per_db || 0.43;
                 
-                // **FIX**: Use correct column names and fallback to baseline if data is null/undefined
-                const qbVsMan = qb.man_fp_per_db ?? baseFpdb;
-                const qbVsZone = qb.zone_fp_per_db ?? baseFpdb;
+                // Use correct column names from `player_summary` table
+                const qbVsMan = qb.man_fp_db ?? baseFpdb;
+                const qbVsZone = qb.zone_fp_db ?? baseFpdb;
+                // Simplified blitz performance for this model
+                const qbVsBlitz = ((qbVsMan + qbVsZone) / 2) * 1.05;
 
-                // For this model, we'll simplify and use a mix of Man/Zone for Blitz calculation
-                const qbVsBlitz = ((qbVsMan + qbVsZone) / 2) * 1.05; // Assume blitz is slightly more volatile
-
-                // Defense coverage rates, with sensible fallbacks
                 const manRate = (opponentDefense.man_coverage_rate || 30) / 100;
                 const zoneRate = (opponentDefense.zone_coverage_rate || 60) / 100;
                 const blitzRate = (opponentDefense.blitz_rate || 10) / 100;
 
                 const totalRate = manRate + zoneRate + blitzRate;
-                const normManRate = manRate / totalRate;
-                const normZoneRate = zoneRate / totalRate;
-                const normBlitzRate = blitzRate / totalRate;
+                const normManRate = totalRate > 0 ? manRate / totalRate : 0.33;
+                const normZoneRate = totalRate > 0 ? zoneRate / totalRate : 0.34;
+                const normBlitzRate = totalRate > 0 ? blitzRate / totalRate : 0.33;
 
                 const expectedFpdb = (qbVsMan * normManRate) + (qbVsZone * normZoneRate) + (qbVsBlitz * normBlitzRate);
-                const multiplier = expectedFpdb / baseFpdb;
+                const multiplier = baseFpdb > 0 ? expectedFpdb / baseFpdb : 1.0;
 
                 return {
                     multiplier: multiplier,
@@ -641,13 +472,10 @@
                 };
             }
 
-            calculateProjection(qb, gameContext, opponentDefense = null, confidenceLevel = 95) {
+            calculateProjection(qb, gameContext, opponentDefense = null) {
                 try {
-                    const qbTier = this.determineQBTier(qb);
                     let baseFPPerDB = qb.weighted_fp_per_db || 0.4;
-                    const seasonDropbacks = qb.total_dropbacks || 500;
-                    
-                    let estimatedDropbacks = Math.round(seasonDropbacks / 17) || 35;
+                    const estimatedDropbacks = qb.total_dropbacks ? Math.round(qb.total_dropbacks / 17) : 35;
                     
                     let gameScriptMultiplier = 1.0;
                     if (gameContext.spread !== null) {
@@ -664,24 +492,14 @@
                     const totalProjectedFP = adjustedFPPerDB * estimatedDropbacks;
 
                     let matchupType = 'neutral';
-                    if (coverageImpactMultiplier > 1.08) matchupType = 'boom';
-                    if (coverageImpactMultiplier < 0.92) matchupType = 'bust';
-
-                    const confidenceInterval = this.calculateConfidenceInterval(
-                        totalProjectedFP, qbTier, matchupType, confidenceLevel
-                    );
-
-                    const statisticalMetrics = this.calculateStatisticalMetrics(qb, totalProjectedFP, confidenceInterval);
+                    if (coverageImpactMultiplier > 1.07) matchupType = 'boom';
+                    if (coverageImpactMultiplier < 0.93) matchupType = 'bust';
 
                     return {
-                        baseFPPerDB,
+                        totalProjectedFP,
                         adjustedFPPerDB,
                         estimatedDropbacks,
-                        totalProjectedFP,
-                        qbTier,
                         matchupType,
-                        confidenceInterval,
-                        statisticalMetrics,
                         coverageImpact: {
                             multiplier: coverageImpactMultiplier,
                             breakdown: coverageBreakdown
@@ -698,47 +516,24 @@
                 }
             }
 
-            calculateConfidenceInterval(projection, qbTier, matchupType, confidenceLevel = 95) {
-                 const baseStdDev = projection * this.statisticalParams.baseStdDevPct;
-                 const varianceMultiplier = this.statisticalParams.varianceMultipliers[qbTier][matchupType];
-                 const adjustedStdDev = baseStdDev * varianceMultiplier;
-                 const zScores = { 68: 1.0, 90: 1.645, 95: 1.96, 99: 2.576 };
-                 const zScore = zScores[confidenceLevel] || 1.96;
-                 const margin = adjustedStdDev * zScore;
-                 return {
-                     lower: Math.max(0, projection - margin),
-                     upper: projection + margin,
-                     stdDev: adjustedStdDev,
-                     margin: margin
-                 };
-            }
-
-            calculateStatisticalMetrics(qb, projection, confidenceInterval) {
-                const sampleSize = qb.total_dropbacks || 500;
-                const coefficientOfVariation = projection > 0 ? confidenceInterval.stdDev / projection : 0;
-                const sampleAdequacy = Math.min(1.0, sampleSize / this.statisticalParams.minDropbacksForConfidence);
-                const reliabilityScore = Math.round(sampleAdequacy * (1 - Math.min(0.5, coefficientOfVariation)) * 100);
-                return {
-                    coefficientOfVariation, sampleAdequacy, reliabilityScore, sampleSize
-                };
-            }
-
             getSpreadMultiplier(spread) {
-                if (spread <= -14) return this.gameScriptAdjustments.spread.bigFavorite;
-                if (spread <= -7) return this.gameScriptAdjustments.spread.favorite;
-                if (spread <= -3) return this.gameScriptAdjustments.spread.smallFavorite;
-                if (spread <= 2.5) return this.gameScriptAdjustments.spread.pickEm;
-                if (spread <= 6.5) return this.gameScriptAdjustments.spread.smallUnderdog;
-                if (spread <= 13.5) return this.gameScriptAdjustments.spread.underdog;
-                return this.gameScriptAdjustments.spread.bigUnderdog;
+                const s = this.gameScriptAdjustments.spread;
+                if (spread <= -14) return s.bigFavorite;
+                if (spread <= -7) return s.favorite;
+                if (spread <= -3) return s.smallFavorite;
+                if (spread <= 2.5) return s.pickEm;
+                if (spread <= 6.5) return s.smallUnderdog;
+                if (spread <= 13.5) return s.underdog;
+                return s.bigUnderdog;
             }
 
             getTotalMultiplier(total) {
-                if (total < 40) return this.gameScriptAdjustments.total.veryLow;
-                if (total < 45) return this.gameScriptAdjustments.total.low;
-                if (total < 50) return this.gameScriptAdjustments.total.average;
-                if (total < 55) return this.gameScriptAdjustments.total.high;
-                return this.gameScriptAdjustments.total.veryHigh;
+                const t = this.gameScriptAdjustments.total;
+                if (total < 40) return t.veryLow;
+                if (total < 45) return t.low;
+                if (total < 50) return t.average;
+                if (total < 55) return t.high;
+                return t.veryHigh;
             }
         }
 
@@ -746,20 +541,19 @@
 
         async function loadQBData() {
             try {
-                console.log('📈 Loading QB data with coverage splits...');
+                console.log('📈 Loading QB data from player_summary...');
                 
-                // **FIX**: Corrected select query and limit parameter
+                // **FIXED QUERY**: Fetches from player_summary and joins player name/team
                 const { data, error } = await supabaseClient
-                    .from('players')
-                    .select('name, team, weighted_fp_per_db, total_dropbacks, man_fp_per_db, zone_fp_per_db')
-                    .not('name', 'is', null)
-                    .not('team', 'is', null)
+                    .from('player_summary')
+                    .select('*, players(name, team)')
+                    .not('players', 'is', null)
                     .gt('weighted_fp_per_db', 0.1)
                     .order('weighted_fp_per_db', { ascending: false })
-                    .limit(50); // **FIX**: Corrected limit syntax
+                    .limit(50);
 
                 if (error) throw error;
-                if (!data || data.length === 0) throw new Error('No quarterback data found');
+                if (!data || data.length === 0) throw new Error('No quarterback summary data found');
 
                 qbData = data;
                 console.log(`✅ Loaded ${qbData.length} quarterbacks`);
@@ -774,16 +568,13 @@
 
         async function loadDefenseData() {
             try {
-                console.log('🛡️ Loading defense data with coverage tendencies...');
-                
+                console.log('🛡️ Loading defense data...');
                 const { data, error } = await supabaseClient
                     .from('opponent_defense_tendencies')
                     .select('*')
                     .order('team', { ascending: true });
 
                 if (error) throw error;
-                if (!data || data.length === 0) console.warn('⚠️ No defense data found');
-
                 defenseData = data;
                 console.log(`✅ Loaded ${defenseData.length} team defenses`);
                 populateOpponentSelect();
@@ -798,8 +589,9 @@
             select.innerHTML = '<option value="">Select a quarterback</option>';
             qbData.forEach((qb) => {
                 const option = document.createElement('option');
-                option.value = qb.name;
-                option.textContent = `${qb.name} (${qb.team}) - ${qb.weighted_fp_per_db.toFixed(3)} FP/DB`;
+                // The player object is now nested
+                option.value = qb.player_id;
+                option.textContent = `${qb.players.name} (${qb.players.team}) - ${qb.weighted_fp_per_db.toFixed(3)} FP/DB`;
                 select.appendChild(option);
             });
         }
@@ -807,8 +599,6 @@
         function populateOpponentSelect() {
             const select = document.getElementById('opponent-select');
             select.innerHTML = '<option value="">Select opponent</option>';
-            
-            // Use fetched data if available, otherwise provide a fallback list
             const teams = defenseData.length > 0 ? defenseData : [
                 { team: 'ARI', team_name: 'Arizona Cardinals' }, { team: 'ATL', team_name: 'Atlanta Falcons' },
                 { team: 'BAL', team_name: 'Baltimore Ravens' }, { team: 'BUF', team_name: 'Buffalo Bills' },
@@ -839,32 +629,31 @@
         function switchTab(tabName) {
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
             document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
             document.getElementById(`${tabName}-tab`).classList.add('active');
         }
 
         function generateProjection() {
-            const qbName = document.getElementById('qb-select').value;
+            const qbId = document.getElementById('qb-select').value;
             const opponentTeam = document.getElementById('opponent-select').value;
-            const spread = parseFloat(document.getElementById('spread-input').value) || null;
-            const total = parseFloat(document.getElementById('total-input').value) || null;
-            const confidenceLevel = parseInt(document.getElementById('confidence-level').value) || 95;
 
-            if (!qbName || !opponentTeam) {
+            if (!qbId || !opponentTeam) {
                 showStatus('Please select a QB and Opponent', 'error');
                 return;
             }
 
-            const selectedQB = qbData.find(qb => qb.name === qbName);
+            const selectedQB = qbData.find(qb => qb.player_id == qbId);
             const opponentDefense = defenseData.find(def => def.team === opponentTeam);
-            const gameContext = { spread, total };
+            const gameContext = {
+                spread: parseFloat(document.getElementById('spread-input').value) || null,
+                total: parseFloat(document.getElementById('total-input').value) || null
+            };
 
-            const projection = projector.calculateProjection(selectedQB, gameContext, opponentDefense, confidenceLevel);
+            const projection = projector.calculateProjection(selectedQB, gameContext, opponentDefense);
             
             if (projection) {
-                displayProjection(selectedQB, projection, opponentDefense, confidenceLevel);
-                showStatus(`Analysis complete! Reliability: ${projection.statisticalMetrics.reliabilityScore}%`, 'success');
+                displayProjection(selectedQB, projection, opponentDefense);
+                showStatus(`Analysis complete!`, 'success');
             } else {
                 showStatus('Failed to generate projection', 'error');
             }
@@ -872,7 +661,7 @@
         
         function renderCoverageAnalysis(projection) {
             if (!projection.coverageImpact.breakdown) {
-                return '<div class="coverage-analysis"><div class="coverage-title">🛡️ Coverage-Based Matchup</div><div>No defensive data available to calculate coverage impact.</div></div>';
+                return `<div class="coverage-analysis"><div class="coverage-title">🛡️ Coverage Matchup</div><div>No defensive data available.</div></div>`;
             }
 
             const breakdown = projection.coverageImpact.breakdown;
@@ -887,12 +676,10 @@
                         <div>
                             <div class="coverage-label">${breakdown.man.rate.toFixed(1)}% Man Rate</div>
                             <div class="coverage-label">${breakdown.zone.rate.toFixed(1)}% Zone Rate</div>
-                            <div class="coverage-label">${breakdown.blitz.rate.toFixed(1)}% Blitz Rate</div>
                         </div>
                         <div>
                              <div class="coverage-label">${breakdown.man.qbFpdb.toFixed(3)} FP/DB vs Man</div>
                              <div class="coverage-label">${breakdown.zone.qbFpdb.toFixed(3)} FP/DB vs Zone</div>
-                             <div class="coverage-label">${breakdown.blitz.qbFpdb.toFixed(3)} FP/DB vs Blitz</div>
                         </div>
                         <div class="coverage-impact-card">
                             <div class="coverage-label">Matchup-Adjusted FP/DB</div>
@@ -906,7 +693,7 @@
             `;
         }
 
-        function displayProjection(qb, projection, opponentDefense, confidenceLevel) {
+        function displayProjection(qb, projection, opponentDefense) {
             const resultsDiv = document.getElementById('projection-results');
             const opponentName = opponentDefense ? (opponentDefense.team_name || opponentDefense.team) : document.getElementById('opponent-select').value;
             
@@ -921,7 +708,7 @@
                 <div class="${cardClass}">
                     <div class="${indicatorClass}">${indicatorIcon} ${indicatorText}</div>
                     <div class="projection-header">
-                        <span class="qb-name">${qb.name} (${qb.team})</span>
+                        <span class="qb-name">${qb.players.name} (${qb.players.team})</span>
                         <span class="opponent">vs ${opponentName}</span>
                     </div>
 
@@ -941,15 +728,6 @@
                     </div>
 
                     ${coverageHTML}
-
-                    <div class="confidence-interval">
-                        <div class="confidence-title">📊 ${confidenceLevel}% Confidence Interval</div>
-                        <div class="confidence-range">
-                            <span class="confidence-low">${projection.confidenceInterval.lower.toFixed(1)}</span>
-                            <span style="color: #64748b;">to</span>
-                            <span class="confidence-high">${projection.confidenceInterval.upper.toFixed(1)}</span>
-                        </div>
-                    </div>
                     
                     <div class="breakdown-section">
                         <div class="breakdown-title">⚙️ Projection Modifiers</div>
@@ -965,24 +743,6 @@
                             <div class="breakdown-item">
                                 <div class="breakdown-value" style="color: ${projection.adjustmentBreakdown.defenseAdj >= 1 ? '#10b981' : '#ef4444'};">${((projection.adjustmentBreakdown.defenseAdj - 1) * 100).toFixed(1)}%</div>
                                 <div class="breakdown-label">Coverage Impact</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="statistical-metrics">
-                        <div class="metrics-title">📈 Statistical Snapshot</div>
-                        <div class="metrics-grid">
-                            <div class="metric-item">
-                                <div class="metric-value">${projection.statisticalMetrics.reliabilityScore}</div>
-                                <div class="metric-label">Reliability Score</div>
-                            </div>
-                            <div class="metric-item">
-                                <div class="metric-value">${(projection.statisticalMetrics.coefficientOfVariation * 100).toFixed(1)}%</div>
-                                <div class="metric-label">Volatility (CV)</div>
-                            </div>
-                             <div class="metric-item">
-                                <div class="metric-value">±${projection.confidenceInterval.margin.toFixed(1)}</div>
-                                <div class="metric-label">Margin of Error</div>
                             </div>
                         </div>
                     </div>
